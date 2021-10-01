@@ -1,12 +1,23 @@
 {
-  "name": "TechNFD",
+  "name": "technfd",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "be",
-  "license": "ISC"
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BenIT58383/TechNFD.git"
+  },
+  "bugs": {
+    "url": "https://github.com/BenIT58383/TechNFD/issues"
+  },
+  "homepage": "https://github.com/BenIT58383/TechNFD#readme",
+  "description": "",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
 }
