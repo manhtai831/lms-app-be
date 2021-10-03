@@ -28,7 +28,7 @@ module.exports.createCourse = function (req, res) {
 module.exports.getAllCourse = function (req, res) {
 
     const index = req.query.pageIndex || 1;
-    const size = req.query.pageSize;
+    const size = req.query.pageSize||50;
     Course.find()
         .skip((Number(index) * Number(size)) - Number(size)) // Trong page đầu tiên sẽ bỏ qua giá trị là 0
         .limit(Number(size))
@@ -48,10 +48,10 @@ module.exports.getSingleCourse = function (req, res) {
     Course.findOne({id: id})
         .select('id title description')
         .then((singleCourse) => {
-            res.status(200).json(baseJson.baseJson(0, singleCourse));
+            res.status(status.success).json(baseJson.baseJson(0, singleCourse));
         })
         .catch((err) => {
-            res.status(500).json(baseJson.baseJson(99, err.message));
+            res.status(status.server_error).json(baseJson.baseJson(99, err.message));
         });
 }
 // delete a course
@@ -60,28 +60,21 @@ module.exports.deleteCourse =
         const id = req.query.courseId;
         Course.findByIdAndRemove(id)
             .exec()
-            .then(() => res.status(200).json(baseJson.baseJson(0, null)))
-            .catch((err) => res.status(500).json(baseJson.baseJson(99, err.message)));
+            .then(() => res.status(status.success).json(baseJson.baseJson(0, null)))
+            .catch((err) => res.status(status.server_error).json(baseJson.baseJson(99, err.message)));
     }
 
 
 // update course
 module.exports.updateCourse = function (req, res) {
-    const id = req.body._id;
+    const id = req.body.id;
     const updateObject = req.body;
     Course.updateOne({id: id}, {$set: updateObject})
         .exec()
         .then(() => {
-            res.status(200).json({
-                success: true,
-                message: 'Course is updated',
-                updateCourse: updateObject,
-            });
+            res.status(status.success).json(baseJson.baseJson(0, null));
         })
         .catch((err) => {
-            res.status(500).json({
-                success: false,
-                message: 'Server error. Please try again.'
-            });
+            res.status(status.server_error).json(baseJson.baseJson(99, err.message));
         });
 }
