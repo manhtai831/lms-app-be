@@ -8,4 +8,6 @@ router.get('/detail-course', getSingleCourse);
 router.post('/updateCourse', updateCourse);
 router.post('/delete-course', deleteCourse);
 
+
+
 module.exports = router;

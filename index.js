@@ -27,6 +27,7 @@ app.get('/', function (req, res) {
     res.status(status.success).json({
         message: 'TECH NFD API RESTFUL',
     });
+    res.send('API')
 });
 
 app.use('/api/', mainRoutes);
