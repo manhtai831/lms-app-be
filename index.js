@@ -24,14 +24,16 @@ mongoose.connect(keyResource.uriDB, {useNewUrlParser: true, useUnifiedTopology: 
     });
 
 app.get('/', function (req, res) {
-    res.status(status.success).json({
-        message: 'TECH NFD API RESTFUL',
-    });
-    res.send('API')
+    if (!res.headersSent) {
+        res.status(status.success).json({
+            message: 'TECH NFD API RESTFUL',
+        });
+    }
+    res.end();
 });
 
 app.use('/api/', mainRoutes);
 
 app.listen(port, function () {
-    console.log('Listening on port 3000!');
+    console.log('Listening on port ' + port);
 });
