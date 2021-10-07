@@ -11,13 +11,14 @@ const userModel = new mongoose.Schema({
         type: String,
         required: true,
     },
-    testModel: Object,
     userName: String,
     password: String,
     email: String,
     phoneNumber: String,
     birth:String,
-    token: String
+    token: String,
+    permission: [],
+    avatar:Object
 });
 
 autoIncrement.initialize(mongoose.connection);

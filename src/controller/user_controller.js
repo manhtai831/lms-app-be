@@ -2,8 +2,6 @@ const jwt = require('jsonwebtoken');
 const userModel = require('../model/user_model');
 const bcrypt = require('bcrypt');
 const {baseJson} = require("../utils/base_json");
-const verifyToken = require("../middleware/auth_controller");
-const Course = require('../model/tetst_model')
 
 async function register(req, res) {
     let encryptedPassword;
@@ -99,7 +97,7 @@ async function login(req, res) {
 async function getUserInfo(req, res) {
     console.log(req.user);
     userModel.findOne({id:req.user.id})
-        .select('id name userName password email')
+        .select('id name userName email')
         .then((result) => {
         return res.status(200).json(baseJson({code:0,data:result}));
     }).catch((error) =>{
@@ -107,6 +105,26 @@ async function getUserInfo(req, res) {
     })
 }
 
+async function deleteUser(req, res) {
+    console.log(req.user);
+    userModel.deleteOne({id:req.user.id})
+        .then((result) => {
+        return res.status(200).json(baseJson({code:0,data:{}}));
+    }).catch((error) =>{
+        return res.status(500).json(baseJson({code:99,data:error}));
+    })
+}
+
+async function updateUser(req, res) {
+    console.log(req.body);
+    userModel.updateOne({id:req.body.id},{$set: req.body})
+        .then((result) => {
+        return res.status(200).json(baseJson({code:0,data:{}}));
+    }).catch((error) =>{
+        return res.status(500).json(baseJson({code:99,data:error}));
+    })
+}
+
 module.exports = {
-    register, getUserInfo, login
+    register, getUserInfo, login,deleteUser,updateUser
 }

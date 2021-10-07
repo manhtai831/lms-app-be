@@ -5,7 +5,7 @@ const config = process.env;
 
 const verifyToken = (req, res, next) => {
     const token =
-        req.body.token || req.query.token || req.headers["Authentication"];
+        req.body.token || req.query.token || req.headers["token"];
 
     if (!token) {
         return res.status(403).json(baseJson({code:99,message: "A token is required for authentication"}));
