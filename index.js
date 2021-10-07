@@ -7,7 +7,8 @@ const status = require('./src/utils/status');
 
 const express = require('express');
 const app = express();
-const port = 7980;
+
+app.set('port', process.env.PORT || 3000);
 
 
 app.use(bodyParser.json());
@@ -34,6 +35,6 @@ app.get('/', function (req, res) {
 
 app.use('/api/', mainRoutes);
 
-app.listen(port, function () {
-    console.log('Listening on port ' + port);
+app.listen(app.get('port'), function () {
+    console.log('Listening on port ' + app.get('port'));
 });
