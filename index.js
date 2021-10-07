@@ -2,10 +2,14 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const logger = require('morgan');
 const mainRoutes = require('./src/route/main');
-const keyResource = require('./src/utils/key_resource');
+const userRoutes = require('./src/route/user_route');
 const status = require('./src/utils/status');
-
+const dotenv = require('dotenv');
 const express = require('express');
+
+// get config vars
+dotenv.config();
+
 const app = express();
 
 app.set('port', process.env.PORT || 3000);
@@ -15,7 +19,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(logger('dev'));
 
-mongoose.connect(keyResource.uriDB, {useNewUrlParser: true, useUnifiedTopology: true})
+var db = process.env.URI_DB_DEV || process.env.URI_DB_PRODUCT;
+mongoose.connect(db, {useNewUrlParser: true, useUnifiedTopology: true})
     .then(() => {
         console.log('Database connected')
     })
@@ -34,7 +39,10 @@ app.get('/', function (req, res) {
 });
 
 app.use('/api/', mainRoutes);
+app.use('/api/user', userRoutes);
+
 
 app.listen(app.get('port'), function () {
     console.log('Listening on port ' + app.get('port'));
+    console.log(db);
 });

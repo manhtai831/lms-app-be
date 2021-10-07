@@ -17,7 +17,7 @@ const courseSchema = new mongoose.Schema({
 
 autoIncrement.initialize(mongoose.connection);
 courseSchema.plugin(autoIncrement.plugin, {
-    model: "courses", // collection or table name in which you want to apply auto increment
+    model: "Course", // collection or table name in which you want to apply auto increment
     field: "id", // field of model which you want to auto increment
     startAt: 1, // start your auto increment value from 1
     incrementBy: 1, // incremented by 1
