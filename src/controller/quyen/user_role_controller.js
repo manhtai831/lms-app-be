@@ -10,7 +10,7 @@ const status = require("../../utils/status");
          const listRole = req.body;
          console.log(req.body);
          listRole.forEach(async (element)=>{
-             const  role = RoleModel.findOne({id:element});
+             const role = await  RoleModel.findOne({id:element}).select('id');
              if(role){
                  const userRoleModel = new UserRoleModel({
                      idUser: req.user.id,

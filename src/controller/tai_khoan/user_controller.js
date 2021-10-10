@@ -104,7 +104,7 @@ async function login(req, res) {
 async function getUserInfo(req, res) {
     try {
         console.log(req.user);
-        var user = await userModel.findOne({id: req.user.id}).select('id permission name userName email');
+        var user = await userModel.findOne({id: req.user.id}).select('id permission name userName email avatar');
         if (user) {
             const roles = await userRoleModel.find({idUser: user.id}).select('idRole name');
             for (var i = 0; i < roles.length; i++) {
