@@ -71,7 +71,7 @@ async function login(req, res) {
 
 
         // Validate if user exist in our database
-        const user = await userModel.findOne({userName: userName}).select('id permission name userName email token');
+        const user = await userModel.findOne({userName: userName,password:password}).select('id permission name userName email token');
         if (user) {
             // Create token
             const token = jwt.sign(
@@ -141,7 +141,26 @@ async function updateUser(req, res) {
     })
 }
 
+async function changePassword(req, res) {
+    console.log(req.user);
+    var user = await  userModel.findOne({id: req.user.id});
+    if(user != null){
+        if(req.body.oldPassword === user.password){
+            userModel.updateOne({id: req.user.id},{$set : {password: req.body.newPassword}})
+                .then((result) => {
+                    return res.status(200).json(baseJson({code: 0}));
+                }).catch((error) => {
+                return res.status(500).json(baseJson({code: 99, data: error}));
+            })
+        }else{
+            return res.status(200).json(baseJson({code: 0, message:'Sai mật khẩu cũ'}));
+        }
+    }
+
+
+}
+
 
 module.exports = {
-    register, getUserInfo, login, deleteUser, updateUser,
+    register, getUserInfo, login, deleteUser, updateUser,changePassword
 }
