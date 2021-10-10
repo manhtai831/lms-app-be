@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const autoIncrement = require('mongoose-auto-increment');
-const UserRole = require('../quyen/role_model');
 
 mongoose.Promise = global.Promise;
 
@@ -9,16 +8,18 @@ const userModel = new mongoose.Schema({
     id: Number,
     name: {
         type: String,
-        required: true,
     },
-    userName: String,
+    userName: {
+        type:String,
+        immutable: true
+    },
     password: String,
     email: String,
     phoneNumber: String,
     birth:String,
     token: String,
     permission: [],
-    avatar:Object
+    avatar:String
 });
 
 autoIncrement.initialize(mongoose.connection);

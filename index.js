@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const logger = require('morgan');
 const mainRoutes = require('./src/route/main');
 const userRoutes = require('./src/route/tai_khoan/user_route');
+const departmentRoutes = require('./src/route/nganh/department_route');
 const status = require('./src/utils/status');
 const dotenv = require('dotenv');
 const express = require('express');
@@ -40,6 +41,7 @@ app.get('/', function (req, res) {
 
 app.use('/api/', mainRoutes);
 app.use('/api/user', userRoutes);
+app.use('/api/department', departmentRoutes);
 
 
 app.listen(app.get('port'), function () {

@@ -1,8 +1,8 @@
-const dateTime = require('date-and-time')
+const {getNowFormatted} = require("../utils/utils");
 
 module.exports.baseJson = function ({code, message, data}) {
     return {
-        time: Date().toString(),
+        time: getNowFormatted(),
         error: jsonError({code: code, message: message}),
         data: data ?? {},
     }
@@ -21,7 +21,6 @@ module.exports.baseJsonPage = function (index, size, total, data) {
         pageSize: size,
         totalPage: Math.floor(total / size < 1 ? 1 : total / size),
         recordTotal: total,
-
         data: data,
     }
 }
