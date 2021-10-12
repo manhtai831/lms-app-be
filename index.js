@@ -1,9 +1,8 @@
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const logger = require("morgan");
-const mainRoutes = require("./src/route/main");
-const userRoutes = require("./src/route/user_route");
-const departmentRoutes = require("./src/route/department_route");
+const userRoutes = require("./src/api/user/route");
+const departmentRoutes = require("./src/api/department/route");
 const status = require("./src/utils/status");
 const dotenv = require("dotenv");
 const express = require("express");
@@ -39,8 +38,7 @@ app.get("/", function (req, res) {
 	res.end();
 });
 
-app.use("/api/", mainRoutes, departmentRoutes);
-app.use("/api/user", userRoutes);
+app.use("/api/", departmentRoutes, userRoutes);
 
 app.listen(app.get("port"), function () {
 	console.log("Listening on port " + app.get("port"));
