@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const logger = require("morgan");
 const userRoutes = require("./src/api/user/route");
 const departmentRoutes = require("./src/api/department/route");
+const classRoutes = require("./src/api/class/route");
 const status = require("./src/utils/status");
 const dotenv = require("dotenv");
 const express = require("express");
@@ -38,7 +39,7 @@ app.get("/", function (req, res) {
 	res.end();
 });
 
-app.use("/api/", departmentRoutes, userRoutes);
+app.use("/api/", departmentRoutes, userRoutes,classRoutes);
 
 app.listen(app.get("port"), function () {
 	console.log("Listening on port " + app.get("port"));

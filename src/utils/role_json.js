@@ -46,5 +46,11 @@ module.exports = {
 	xoa_nganh: {
 		id: 12,
 		name: "Xóa ngành",
+	},create_class: {
+		id: 13,
+		name: "Tạo mới lớp",
+	},get_all_class: {
+		id: 13,
+		name: "Danh sách lớp",
 	},
 };
