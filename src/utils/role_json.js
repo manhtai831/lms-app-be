@@ -53,4 +53,20 @@ module.exports = {
 		id: 13,
 		name: "Danh sách lớp",
 	},
+	create_subject: {
+		id: 17,
+		name: "thêm môn học",
+	},
+	update_subject: {
+		id: 18,
+		name: "cập nhật môn học",
+	},
+	delete_subject: {
+		id: 19,
+		name: "xóa môn học",
+	},
+	get_subjects: {
+		id: 20,
+		name: "lấy danh sách môn học",
+	},
 };
