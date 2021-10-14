@@ -3,6 +3,8 @@ const mongoose = require("mongoose");
 const logger = require("morgan");
 const userRoutes = require("./src/api/user/route");
 const departmentRoutes = require("./src/api/department/route");
+const classRoutes = require("./src/api/class/route");
+const userClassRoutes = require("./src/api/user_class/route");
 const subjectRoutes = require("./src/api/subject/route");
 const documentTypeRoutes = require("./src/api/document_type/route");
 const documentRoutes = require("./src/api/document/route");
@@ -47,8 +49,11 @@ app.use(
 	userRoutes,
 	subjectRoutes,
 	documentTypeRoutes,
-	documentRoutes
+	documentRoutes,
+	classRoutes,
+	userClassRoutes
 );
+
 app.listen(app.get("port"), function () {
 	console.log("Listening on port " + app.get("port"));
 	console.log(db);

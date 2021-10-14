@@ -106,4 +106,8 @@ module.exports = {
 		id: 29,
 		name: "cập nhật tài liệu",
 	},
+	register_class: {
+		id: 30,
+		name: "Đăng ký vào lớp",
+	},
 };
