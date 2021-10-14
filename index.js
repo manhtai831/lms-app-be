@@ -4,6 +4,8 @@ const logger = require("morgan");
 const userRoutes = require("./src/api/user/route");
 const departmentRoutes = require("./src/api/department/route");
 const subjectRoutes = require("./src/api/subject/route");
+const documentTypeRoutes = require("./src/api/document_type/route");
+const documentRoutes = require("./src/api/document/route");
 const status = require("./src/utils/status");
 const dotenv = require("dotenv");
 const express = require("express");
@@ -39,7 +41,14 @@ app.get("/", function (req, res) {
 	res.end();
 });
 
-app.use("/api/", departmentRoutes, userRoutes, subjectRoutes);
+app.use(
+	"/api",
+	departmentRoutes,
+	userRoutes,
+	subjectRoutes,
+	documentTypeRoutes,
+	documentRoutes
+);
 app.listen(app.get("port"), function () {
 	console.log("Listening on port " + app.get("port"));
 	console.log(db);

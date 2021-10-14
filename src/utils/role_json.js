@@ -47,6 +47,7 @@ module.exports = {
 		id: 12,
 		name: "Xóa ngành",
 	},
+	//subject role
 	create_subject: {
 		id: 17,
 		name: "thêm môn học",
@@ -62,5 +63,47 @@ module.exports = {
 	get_subjects: {
 		id: 20,
 		name: "lấy danh sách môn học",
+	},
+	//document_type roles
+	create_document_type: {
+		id: 21,
+		name: "thêm kiểu tài liệu",
+	},
+	get_detail_document_type: {
+		id: 200,
+		name: "lấy chi tiết kiểu tài liệu",
+	},
+	get_document_type: {
+		id: 22,
+		name: "lấy danh sách kiểu tài liệu",
+	},
+	delete_document_type: {
+		id: 23,
+		name: "xóa kiểu tài liệu",
+	},
+	update_document_type: {
+		id: 24,
+		name: "cập nhật kiểu tài liệu",
+	},
+	//document roles
+	create_document: {
+		id: 25,
+		name: "thêm tài liệu",
+	},
+	get_detail_document: {
+		id: 26,
+		name: "xem chi tiết tài liệu",
+	},
+	get_all_documents: {
+		id: 27,
+		name: "lấy danh sách tài liệu",
+	},
+	delete_document: {
+		id: 28,
+		name: "xóa tài liệu",
+	},
+	update_document: {
+		id: 29,
+		name: "cập nhật tài liệu",
 	},
 };
