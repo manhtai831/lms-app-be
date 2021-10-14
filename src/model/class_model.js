@@ -17,6 +17,7 @@ const classModel = new mongoose.Schema({
     },
     createAt: Date,
     createBy: Object,
+    createBy1: String,
     updateAt: Date,
     updateBy: Object,
 });

@@ -8,8 +8,9 @@ const {
 
 const userModel = require("../../model/user_model");
 const Class = require("../../model/class_model");
-const {create_class, get_all_class,} = require("../../utils/role_json");
+const {create_class, get_all_class, update_class, delete_class, register_class,} = require("../../utils/role_json");
 const {baseJsonPage} = require("../../utils/base_json");
+
 
 async function createClass(req, res) {
     var hasRole = await verifyRole(res, {
@@ -51,6 +52,7 @@ async function createClass(req, res) {
         });
 }
 
+
 async function getAllClass(req, res) {
     var hasRole = await verifyRole(res, {
         roleId: get_all_class.id,
@@ -64,36 +66,17 @@ async function getAllClass(req, res) {
             );
     }
 
-
     const index = req.query.pageIndex || 1;
     const size = req.query.pageSize || 50;
     await Class
         .find()
         .skip(Number(index) * Number(size) - Number(size))
         .limit(Number(size))
-        .select("id name description createAt createBy updateAt updateBy")
-        .exec((err, allData) => {
-
-            Class.countDocuments((err1, count) => {
-                if (err || Number(index) === 0)
-                    return res.status(status.server_error).json(
-                        baseJson.baseJson({
-                            code: 99,
-                            message: Number(index) === 0 ? "Error Index" : err.message,
-                        })
-                    );
-                var dataCallback = [];
-                for  (var i = 0;i< count;i++) {
-                    var data =JSON.stringify(allData[i]);
-                    console.log(data);
-                    // const user1 =  userModel
-                    //     .findOne({id: allData[i].createBy.id})
-                    //     .select("id name userName email");
-                    // allData[i].creatBy = user1;
-                    // dataCallback.push(allData[i].creatBy);
-
+        .select("id name description createAt createBy updateAt updateBy").exec((error, result) => {
+            Class.countDocuments(async (err1, count) => {
+                for (var i = 0; i < result.length; i++) {
+                    result[i].createBy = await userModel.findOne({id: result[i].createBy.id}).select("id name userName email avatar");
                 }
-
                 return res.status(status.success).json(
                     baseJson.baseJson({
                         code: 0,
@@ -101,17 +84,22 @@ async function getAllClass(req, res) {
                             Number(index),
                             Number(size),
                             count,
-                            allData
+                            result
                         ),
                     })
                 );
             });
-        });
+            if (error) return baseJson.baseJson({
+                code: 99,
+
+            })
+        })
+
 }
 
-async function updateDepartment(req, res) {
+async function updateClass(req, res) {
     var hasRole = await verifyRole(res, {
-        roleId: cap_nhat_nganh.id,
+        roleId: update_class.id,
         userId: req.user.id,
     });
     if (hasRole === false) {
@@ -121,19 +109,19 @@ async function updateDepartment(req, res) {
                 baseJson.baseJson({code: 99, message: "Tài khoản không có quyền"})
             );
     }
-    if (req.body.name == null) {
+    if (req.body.id == null) {
         return res
             .status(status.success)
             .json(
-                baseJson.baseJson({code: 99, message: "Name department is required"})
+                baseJson.baseJson({code: 99, message: "ID class is required"})
             );
     }
 
     const user = await userModel
         .findOne({id: req.user.id})
-        .select("id name userName email  ");
+        .select("id name userName email");
 
-    return departmentModel
+    return Class
         .updateOne(
             {id: req.body.id},
             {
@@ -154,9 +142,9 @@ async function updateDepartment(req, res) {
         });
 }
 
-async function deleteDepartment(req, res) {
+async function deleteClass(req, res) {
     var hasRole = await verifyRole(res, {
-        roleId: xoa_nganh.id,
+        roleId: delete_class.id,
         userId: req.user.id,
     });
     if (hasRole === false) {
@@ -170,11 +158,11 @@ async function deleteDepartment(req, res) {
         return res
             .status(status.success)
             .json(
-                baseJson.baseJson({code: 99, message: "Id department is required"})
+                baseJson.baseJson({code: 99, message: "Id is required"})
             );
     }
 
-    return departmentModel
+    return Class
         .deleteOne({id: req.query.id})
         .then(() => {
             return res.status(status.success).json(baseJson.baseJson({code: 0}));
@@ -188,6 +176,7 @@ async function deleteDepartment(req, res) {
 module.exports = {
     createClass,
     getAllClass,
-    updateDepartment,
-    deleteDepartment,
+    updateClass,
+    deleteClass
+
 };
