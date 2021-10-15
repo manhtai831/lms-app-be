@@ -68,7 +68,7 @@ const getAllSubjects = async (req, res, next) => {
 
 	//find all subjects
 	Subject.find()
-		.select("name description")
+		.select("name description id")
 		.then((data) => {
 			return res.status(status.success).json(
 				baseJson.baseJson({
