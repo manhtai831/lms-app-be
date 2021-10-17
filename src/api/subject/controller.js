@@ -31,8 +31,8 @@ const createSubject = async (req, res, next) => {
 	const subjectModel = new Subject({
 		name: req.body.name,
 		description: req.body.description,
-		createAt: getNowFormatted(),
-		createBy: req.user.id,
+		createdAt: getNowFormatted(),
+		createdBy: req.user.id,
 	});
 
 	//add data
@@ -135,8 +135,8 @@ const updateSubject = async (req, res) => {
 			$set: {
 				name: req.body.name,
 				description: req.body.description,
-				updateBy: req.user.id,
-				updateAt: getNowFormatted(),
+				updatedBy: req.user.id,
+				updatedAt: getNowFormatted(),
 			},
 		}
 	)

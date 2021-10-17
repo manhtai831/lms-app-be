@@ -8,24 +8,21 @@ const DocumentModel = new mongoose.Schema({
 		type: Number,
 		immutable: true,
 	},
-	name: {
-		type: String,
-		required: true,
-	},
+	title: String,
 	content: String,
 	description: String,
-	createAt: Date,
-	createBy: Number,
-	updateAt: Date,
-	updateBy: Number,
+	createdAt: Date,
+	createdBy: Number,
+	updatedAt: Date,
+	updatedBy: Number,
 });
 
 autoIncrement.initialize(mongoose.connection);
 DocumentModel.plugin(autoIncrement.plugin, {
-	model: "Document", // collection or table name in which you want to apply auto increment
+	model: "document", // collection or table name in which you want to apply auto increment
 	field: "id", // field of model which you want to auto increment
 	startAt: 1, // start your auto increment value from 1
 	incrementBy: 1, // incremented by 1
 });
 
-module.exports = mongoose.model("Document", DocumentModel);
+module.exports = mongoose.model("document", DocumentModel);

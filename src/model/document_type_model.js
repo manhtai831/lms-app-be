@@ -12,10 +12,10 @@ const DocumentTypeModel = new mongoose.Schema({
 		type: String,
 		required: true,
 	},
-	createAt: Date,
-	createBy: Number,
-	updateAt: Date,
-	updateBy: Number,
+	createdAt: Date,
+	createdBy: Number,
+	updatedAt: Date,
+	updatedBy: Number,
 });
 
 autoIncrement.initialize(mongoose.connection);
