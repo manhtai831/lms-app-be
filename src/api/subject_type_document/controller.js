@@ -112,6 +112,7 @@ async function deleteAClassInASubject(req, res) {
 
 }
 
+//TODO Đang viết giở hàm này
 async function getTypeDocumentOfSubject(req, res) {
     var hasRole = await verifyRole(res, {
         roleId: get_all_type_document_by_subject.id,
