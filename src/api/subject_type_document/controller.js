@@ -3,7 +3,8 @@ const {
     create_class,
     add_class_to_subject,
     add_class_of_subject,
-    add_a_class_to_a_subject, delete_a_class_in_a_subject
+    add_a_class_to_a_subject, delete_a_class_in_a_subject, create_document, add_type_document_to_a_subject,
+    get_all_type_document_by_subject
 } = require("../../utils/role_json");
 const status = require("../../utils/status");
 const baseJson = require("../../utils/base_json");
@@ -11,61 +12,23 @@ const userModel = require("../../model/user_model");
 const Class = require("../../model/class_model");
 const RoleModel = require("../../model/role_model");
 const UserRoleModel = require("../../model/user_role_model");
+const SubjectTypeDocument = require("../../model/subject_type_document_model");
 const SubjectClassModel = require("../../model/subject_class_model");
 const SubjectModel = require("../../model/subject_model");
 const {createClass} = require("../class/controller");
+const Document = require("../../model/document_model");
 
-async function addClassToSubject(req, res) {
-    var hasRole = await verifyRole(res, {
-        roleId: add_class_to_subject.id,
-        userId: req.user.id,
-    });
-    if (hasRole === false) {
-        return res
-            .status(status.success)
-            .json(
-                baseJson.baseJson({code: 99, message: "Tài khoản không có quyền"})
-            );
-    }
-    const listClass = req.body.idClasses;
-    console.log(req.body);
-    const mSubject = await SubjectModel.findOne({id: req.body.idSubject});
-    if (mSubject) {
-        await SubjectClassModel.deleteMany({idSubject: req.body.idSubject});
-        listClass.forEach(async (element) => {
-            const mClass = await Class.findOne({id: element});
-            if (mClass) {
-                const subjectClassModel = new SubjectClassModel({
-                    idClass: element,
-                    idSubject: req.body.idSubject,
-                });
-                await subjectClassModel.save();
-            } else {
-                return res.status(status.success).json(baseJson.baseJson({
-                    code: 0,
-                    message: 'Không có lớp học' + element
-                }));
-
-            }
-        });
-        return res.status(status.success).json(baseJson.baseJson({code: 0}));
-
-    } else {
-        return res.status(status.success).json(baseJson.baseJson({code: 1, message: 'Không có môn học'}));
-    }
-}
-
-async function addAClassToASubject(req, res) {
-    //Tạo mới class
-    var hasRoleClass = await verifyRole(res, {
-        roleId: create_class.id,
+async function addATDocumentToASubject(req, res) {
+    //Tạo mới Type document
+    var hasRoleTDocument= await verifyRole(res, {
+        roleId: create_document.id,
         userId: req.user.id,
     });
     var hasRole = await verifyRole(res, {
-        roleId: add_a_class_to_a_subject.id,
+        roleId: add_type_document_to_a_subject.id,
         userId: req.user.id,
     });
-    if (hasRole === false || hasRoleClass === false) {
+    if (hasRole === false || hasRoleTDocument === false) {
         return res
             .status(status.success)
             .json(
@@ -73,38 +36,35 @@ async function addAClassToASubject(req, res) {
             );
     }
 
-    const user = await userModel
-        .findOne({id: req.user.id})
-        .select("id name userName email");
-
-    const classModel = new Class({
-        name: req.body.name,
+    const DocumentModel = new Document({
+        title: req.body.title,
+        content: req.body.content,
         description: req.body.description,
-        createAt: getNowFormatted(),
-        createBy: user,
+        createdAt: getNowFormatted(),
+        createdBy: req.user.id,
     });
 
     const mSubject = await SubjectModel.findOne({id: req.body.idSubject});
 
     if (mSubject) {
-        return classModel
+        return DocumentModel
             .save()
             .then(async (result) => {
-                const subjectClassModel = new SubjectClassModel({
-                    idClass: result.id,
+                const subjectTypeDocument = new SubjectTypeDocument({
+                    idTypeDocument: result.id,
                     idSubject: req.body.idSubject,
                 });
-                await subjectClassModel.save();
+                await subjectTypeDocument.save();
                 return res.status(status.success).json(baseJson.baseJson({
                     code: 0,
-                    message: 'Thêm lớp học thành công'
+                    message: 'Thêm loại tài liệu thành công'
                 }));
             })
             .catch((error) => {
                 console.log(error);
                 return res.status(status.server_error).json(baseJson.baseJson({
                     code: 99,
-                    message: 'Tạo mới lớp không thành công'
+                    message: 'Tạo mới loại tài liệu không thành công'
                 }));
             });
     } else {
@@ -152,9 +112,9 @@ async function deleteAClassInASubject(req, res) {
 
 }
 
-async function getClassOfSubject(req, res) {
+async function getTypeDocumentOfSubject(req, res) {
     var hasRole = await verifyRole(res, {
-        roleId: add_class_of_subject.id,
+        roleId: get_all_type_document_by_subject.id,
         userId: req.user.id,
     });
     if (hasRole === false) {
@@ -166,21 +126,19 @@ async function getClassOfSubject(req, res) {
     }
 
     console.log(req.query.idSubject);
-    var mSubjectClass = await SubjectClassModel.find({idSubject: req.query.idSubject});
-    if (mSubjectClass) {
-        var listClass = [];
-        for (var i = 0; i < mSubjectClass.length; i++) {
-            const mClass = await Class.findOne({id: mSubjectClass[i].idClass});
-            listClass.push(mClass);
+    var mSubject = await SubjectTypeDocument.find({idSubject: req.query.idSubject});
+    if (mSubject) {
+        var listTypeDocument = [];
+        for (var i = 0; i < mSubject.length; i++) {
+            const mTypeDocument = await SubjectModel.findOne({id: mSubject[i].idTypeDocument});
+            listTypeDocument.push(mTypeDocument);
         }
-
-        console.log(listClass);
-        return res.status(status.success).json(baseJson.baseJson({code: 0, data: listClass}));
+        return res.status(status.success).json(baseJson.baseJson({code: 0, data: listTypeDocument}));
     } else {
         return res.status(status.success).json(baseJson.baseJson({code: 1, message: 'Không có môn học'}));
     }
 }
 
 module.exports = {
-    addClassToSubject, getClassOfSubject,addAClassToASubject,deleteAClassInASubject
+    addATDocumentToASubject,getTypeDocumentOfSubject
 }

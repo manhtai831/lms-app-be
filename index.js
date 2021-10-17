@@ -8,6 +8,7 @@ const userClassRoutes = require("./src/api/user_class/route");
 const userSemesterRoutes = require("./src/api/user_semester/route");
 const semesterRoutes = require("./src/api/semester/route");
 const subjectClassRoutes = require("./src/api/subject_class/route");
+const subjectTypeDocumentRoutes = require("./src/api/subject_type_document/route");
 const subjectRoutes = require("./src/api/subject/route");
 const documentTypeRoutes = require("./src/api/document_type/route");
 const documentRoutes = require("./src/api/document/route");
@@ -61,6 +62,7 @@ app.use(
 	userClassRoutes,
 	subjectClassRoutes,
 	userSemesterRoutes,
+	subjectTypeDocumentRoutes,
 	semesterRoutes,
 	assigmentRoutes,
 	labRoutes,

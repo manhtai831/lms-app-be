@@ -159,6 +159,22 @@ module.exports = {
 		id: 38,
 		name: "Danh sách kì của 1 người",
 	},
+add_a_class_to_a_subject: {
+		id: 39,
+		name: "Thêm 1 lớp vào trong 1 môn",
+	},
+delete_a_class_in_a_subject: {
+		id: 40,
+		name: "Xóa 1 lớp trong 1 môn",
+	},
+add_type_document_to_a_subject: {
+		id: 41,
+		name: "Thêm mới loại tài liệu vào môn học",
+	},
+get_all_type_document_by_subject: {
+		id: 42,
+		name: "Lấy tất cả loại tài liệu của 1 môn môn học",
+	},
 	//assignmet roles
 	create_assignment: {
 		id: 201,
