@@ -10,7 +10,7 @@ async function addRoleToAccount(req, res) {
 		console.log(req.body);
 		listRole.forEach(async (element) => {
 			const role = await RoleModel.findOne({ id: element }).select("id");
-			await UserRoleModel.deleteMany({idUser: req.user.id});
+			await UserRoleModel.deleteMany({ idUser: req.user.id });
 			if (role) {
 				const userRoleModel = new UserRoleModel({
 					idUser: req.user.id,

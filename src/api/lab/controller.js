@@ -1,4 +1,4 @@
-const Document = require("../../model/document_model");
+const Lab = require("../../model/lab_model");
 const status = require("../../utils/status");
 const baseJson = require("../../utils/base_json");
 const {
@@ -7,17 +7,17 @@ const {
 	convertDateTime,
 } = require("../../utils/utils");
 const {
-	create_document,
-	get_detail_document,
-	get_all_documents,
-	update_document,
-	delete_document,
+	create_lab,
+	get_detail_lab,
+	get_all_labs,
+	update_lab,
+	delete_lab,
 } = require("../../utils/role_json");
 
-const createDocument = async (req, res, next) => {
+const createLab = async (req, res, next) => {
 	//check role
 	var hasRole = await verifyRole(res, {
-		roleId: create_document.id,
+		roleId: create_lab.id,
 		userId: req.user.id,
 	});
 	if (hasRole === false) {
@@ -29,21 +29,25 @@ const createDocument = async (req, res, next) => {
 	}
 
 	//set data
-	const DocumentModel = new Document({
+	const labModel = new Lab({
 		title: req.body.title,
 		content: req.body.content,
-		description: req.body.description,
+		userId: req.body.userId,
+		documentTypeId: req.body.documentTypeId,
+		startTime: req.body.startTime,
+		endTime: req.body.endTime,
 		createdAt: getNowFormatted(),
 		createdBy: req.user.id,
 	});
 
 	//add data
-	return DocumentModel.save()
+	return labModel
+		.save()
 		.then((data) => {
 			return res.status(status.success).json(
 				baseJson.baseJson({
 					code: 0,
-					message: "create document finish!",
+					message: "create lab finish!",
 					data: data,
 				})
 			);
@@ -53,10 +57,10 @@ const createDocument = async (req, res, next) => {
 		});
 };
 
-const getDocumentById = async (req, res, next) => {
+const getDetailLabById = async (req, res, next) => {
 	//check roles
 	var hasRole = await verifyRole(res, {
-		roleId: get_detail_document.id,
+		roleId: get_detail_lab.id,
 		userId: req.user.id,
 	});
 	if (hasRole === false) {
@@ -67,16 +71,16 @@ const getDocumentById = async (req, res, next) => {
 			);
 	}
 
-	//find document by id
-	Document.findOne({ id: req.query.id })
+	//find lab by id
+	Lab.findOne({ id: req.query.id })
 		.select(
-			"id title content description createdAt createdBy updatedAt updatedBy"
+			"id title content userId documentTypeId startTime endTime createdAt createdBy updatedAt updatedBy"
 		)
 		.then((data) => {
 			return res.status(status.success).json(
 				baseJson.baseJson({
 					code: 0,
-					message: "get detail document finish!",
+					message: "get detail lab finish!",
 					data: data,
 				})
 			);
@@ -86,10 +90,10 @@ const getDocumentById = async (req, res, next) => {
 		});
 };
 
-const getAllDocuments = async (req, res, next) => {
+const getAllLabs = async (req, res, next) => {
 	//check role
 	var hasRole = await verifyRole(res, {
-		roleId: get_all_documents.id,
+		roleId: get_all_labs.id,
 		userId: req.user.id,
 	});
 	if (hasRole === false) {
@@ -100,16 +104,16 @@ const getAllDocuments = async (req, res, next) => {
 			);
 	}
 
-	// find all document types
-	Document.find()
+	// find all labs
+	Lab.find()
 		.select(
-			"id title content description createdAt createdBy updatedAt updatedBy"
+			"id title content userId documentTypeId startTime endTime createdAt createdBy updatedAt updatedBy"
 		)
 		.then((data) => {
 			return res.status(status.success).json(
 				baseJson.baseJson({
 					code: 0,
-					message: "get all documents finish!",
+					message: "get all labs finish!",
 					data: data,
 				})
 			);
@@ -119,10 +123,10 @@ const getAllDocuments = async (req, res, next) => {
 		});
 };
 
-const deleteDocument = async (req, res, next) => {
+const deleteLab = async (req, res, next) => {
 	//check role
 	var hasRole = await verifyRole(res, {
-		roleId: delete_document.id,
+		roleId: delete_lab.id,
 		userId: req.user.id,
 	});
 	if (hasRole === false) {
@@ -133,13 +137,13 @@ const deleteDocument = async (req, res, next) => {
 			);
 	}
 
-	//delete document by id
-	Document.deleteOne({ id: req.query.id })
+	//delete lab by id
+	Lab.deleteOne({ id: req.query.id })
 		.then(() => {
 			return res.status(status.success).json(
 				baseJson.baseJson({
 					code: 0,
-					message: "delete document finish!",
+					message: "delete lab finish!",
 					data: req.query.id,
 				})
 			);
@@ -149,10 +153,10 @@ const deleteDocument = async (req, res, next) => {
 		});
 };
 
-const updateDocument = async (req, res) => {
+const updatelab = async (req, res) => {
 	//check role
 	var hasRole = await verifyRole(res, {
-		roleId: update_document.id,
+		roleId: update_lab.id,
 		userId: req.user.id,
 	});
 	if (hasRole === false) {
@@ -163,14 +167,19 @@ const updateDocument = async (req, res) => {
 			);
 	}
 
-	//update subject
-	Document.updateOne(
+	//update lab
+	Lab.updateOne(
+		//update by id
 		{ id: req.query.id },
+		//set and update data
 		{
 			$set: {
+				userId: req.body.userId,
 				title: req.body.title,
 				content: req.body.content,
-				description: req.body.description,
+				documentTypeId: req.body.documentTypeId,
+				startTime: req.body.startTime,
+				endTime: req.body.endTime,
 				updatedBy: req.user.id,
 				updatedAt: getNowFormatted(),
 			},
@@ -180,7 +189,7 @@ const updateDocument = async (req, res) => {
 			return res.status(status.success).json(
 				baseJson.baseJson({
 					code: 0,
-					message: "update document finish!",
+					message: "update lab finish!",
 				})
 			);
 		})
@@ -190,9 +199,9 @@ const updateDocument = async (req, res) => {
 };
 
 module.exports = {
-	createDocument,
-	getDocumentById,
-	getAllDocuments,
-	deleteDocument,
-	updateDocument,
+	createLab,
+	getDetailLabById,
+	getAllLabs,
+	deleteLab,
+	updatelab,
 };

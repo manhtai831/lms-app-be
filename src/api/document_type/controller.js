@@ -31,8 +31,8 @@ const createDocumentType = async (req, res, next) => {
 	//set data
 	const DocumentTypeModel = new DocumentType({
 		name: req.body.name,
-		createAt: getNowFormatted(),
-		createBy: req.user.id,
+		createdAt: getNowFormatted(),
+		createdBy: req.user.id,
 	});
 
 	//add data
@@ -163,8 +163,8 @@ const UpdateDocumentType = async (req, res) => {
 		{
 			$set: {
 				name: req.body.name,
-				updateBy: req.user.id,
-				updateAt: getNowFormatted(),
+				updatedBy: req.user.id,
+				updatedAt: getNowFormatted(),
 			},
 		}
 	)
