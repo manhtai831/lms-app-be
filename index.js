@@ -13,6 +13,8 @@ const documentTypeRoutes = require("./src/api/document_type/route");
 const documentRoutes = require("./src/api/document/route");
 const assigmentRoutes = require("./src/api/assignment/route");
 const labRoutes = require("./src/api/lab/route");
+const answerRoutes = require("./src/api/answer/route");
+const questionRouter = require("./src/api/question/route");
 const status = require("./src/utils/status");
 const dotenv = require("dotenv");
 const express = require("express");
@@ -61,7 +63,9 @@ app.use(
 	userSemesterRoutes,
 	semesterRoutes,
 	assigmentRoutes,
-	labRoutes
+	labRoutes,
+	answerRoutes,
+	questionRouter
 );
 
 app.listen(app.get("port"), function () {
