@@ -8,16 +8,14 @@ const {
 } = require("../../utils/role_json");
 const status = require("../../utils/status");
 const baseJson = require("../../utils/base_json");
-const userModel = require("../../model/user_model");
 const Class = require("../../model/class_model");
-const RoleModel = require("../../model/role_model");
-const UserRoleModel = require("../../model/user_role_model");
 const SubjectTypeDocument = require("../../model/subject_type_document_model");
 const SubjectClassModel = require("../../model/subject_class_model");
 const SubjectModel = require("../../model/subject_model");
-const {createClass} = require("../class/controller");
-const Document = require("../../model/document_model");
+const DocumentTypeModel = require("../../model/document_type_model");
 
+
+///Thêm 1 danh mục vào trong môn học
 async function addATDocumentToASubject(req, res) {
     //Tạo mới Type document
     var hasRoleTDocument= await verifyRole(res, {
@@ -35,21 +33,22 @@ async function addATDocumentToASubject(req, res) {
                 baseJson.baseJson({code: 99, message: "Tài khoản không có quyền"})
             );
     }
-
-    const DocumentModel = new Document({
+///tạo 1 tài liệu
+    const DocumentTypeModel = new DocumentTypeModel({
         title: req.body.title,
-        content: req.body.content,
-        description: req.body.description,
+        name: req.body.name,
         createdAt: getNowFormatted(),
         createdBy: req.user.id,
     });
 
+    ///Tìm môn học
     const mSubject = await SubjectModel.findOne({id: req.body.idSubject});
 
     if (mSubject) {
-        return DocumentModel
+        return DocumentTypeModel
             .save()
             .then(async (result) => {
+                ///lưu danh mục đó vào môn học
                 const subjectTypeDocument = new SubjectTypeDocument({
                     idTypeDocument: result.id,
                     idSubject: req.body.idSubject,
@@ -71,8 +70,16 @@ async function addATDocumentToASubject(req, res) {
         return res.status(status.server_error).json(baseJson.baseJson({code: 99, message: 'Môn học không tồn tại'}));
 
     }
-
 }
+async function getAllTypeDocument(req, res) {
+    return DocumentTypeModel.find().then((result)=>{
+        return res.status(status.success).json(baseJson.baseJson({
+            code: 0,
+            data: result
+        }));
+    });
+}
+
 
 async function deleteAClassInASubject(req, res) {
     var hasRole = await verifyRole(res, {
@@ -112,7 +119,7 @@ async function deleteAClassInASubject(req, res) {
 
 }
 
-//TODO Đang viết giở hàm này
+///lấy các danh mục trong 1 môn học
 async function getTypeDocumentOfSubject(req, res) {
     var hasRole = await verifyRole(res, {
         roleId: get_all_type_document_by_subject.id,
@@ -127,19 +134,26 @@ async function getTypeDocumentOfSubject(req, res) {
     }
 
     console.log(req.query.idSubject);
+    console.log(req.query.libraryZone);
+    ///Tìm môn học
     var mSubject = await SubjectTypeDocument.find({idSubject: req.query.idSubject});
-    if (mSubject) {
-        var listTypeDocument = [];
-        for (var i = 0; i < mSubject.length; i++) {
-            const mTypeDocument = await SubjectModel.findOne({id: mSubject[i].idTypeDocument});
-            listTypeDocument.push(mTypeDocument);
+    ///Xác định kiểu truy cập
+    const libraryZone= req.query.libraryZone;
+    if(libraryZone === 'KHO_HOC_LIEU'){
+        if (mSubject) {
+            var listTypeDocument = [];
+            for (var i = 0; i < mSubject.length; i++) {
+                const mTypeDocument = await SubjectModel.findOne({id: mSubject[i].idTypeDocument});
+                listTypeDocument.push(mTypeDocument);
+            }
+            return res.status(status.success).json(baseJson.baseJson({code: 0, data: listTypeDocument}));
         }
-        return res.status(status.success).json(baseJson.baseJson({code: 0, data: listTypeDocument}));
-    } else {
+    }
+   else {
         return res.status(status.success).json(baseJson.baseJson({code: 1, message: 'Không có môn học'}));
     }
 }
 
 module.exports = {
-    addATDocumentToASubject,getTypeDocumentOfSubject
+    addATDocumentToASubject,getTypeDocumentOfSubject,getAllTypeDocument
 }
