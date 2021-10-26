@@ -80,12 +80,12 @@ async function login(req, res) {
 			var roles = await userRoleModel
 				.find({ idUser: user.id })
 				.select("idRole name");
-			for (var i = 0; i < roles.length; i++) {
-				var role = await roleModel
-					.findOne({ id: roles[i].idRole })
-					.select("id name");
-				roles[i].name = role.name;
-			}
+			// for (var i = 0; i < roles.length; i++) {
+			// 	var role =await roleModel
+			// 		.findOne({ id: roles[i].idRole });
+			// 	console.log(role.name);
+			// 	roles[i].name = role.name;
+			// }
 			user.permission = roles;
 
 			return res.status(200).json(baseJson({ code: 0, data: user }));
@@ -110,15 +110,33 @@ async function getUserInfo(req, res) {
 			const roles = await userRoleModel
 				.find({ idUser: user.id })
 				.select("idRole name");
-			for (var i = 0; i < roles.length; i++) {
-				const role = await roleModel
-					.findOne({ id: roles[i].idRole })
-					.select("id name");
-				roles[i].name = role.name;
-			}
+			// for (var i = 0; i < roles.length; i++) {
+			// 	const role = await roleModel
+			// 		.findOne({ id: roles[i].idRole })
+			// 		.select("id name");
+			// 	roles[i].name = role.name;
+			// }
 			user.permission = roles;
 
 			return res.status(200).json(baseJson({ code: 0, data: user }));
+		}
+		return res
+			.status(200)
+			.json(baseJson({ code: 99, message: "Tài khoản chưa được đăng ký" }));
+	} catch (error) {
+		return res.status(500).json(baseJson({ code: 99, data: error }));
+	}
+}
+
+async function getListUser(req, res) {
+	try {
+		console.log(req.user);
+		var users = await userModel
+			.find()
+			.select("id name userName email avatar");
+		if (users) {
+
+			return res.status(200).json(baseJson({ code: 0, data: users }));
 		}
 		return res
 			.status(200)
@@ -182,5 +200,5 @@ module.exports = {
 	login,
 	deleteUser,
 	updateUser,
-	changePassword,
+	changePassword,getListUser
 };

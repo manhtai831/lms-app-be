@@ -10,17 +10,17 @@ async function addRoleToAccount(req, res) {
 		console.log(req.body);
 		UserRoleModel.deleteMany({ idUser: req.user.id });
 		for(var i = 0; i< listRole.length; i++){
-			const role = RoleModel.findOne({ id: listRole[i] });
+			// const role = RoleModel.findOne({ id: listRole[i] });
 
-			if (role) {
+			// if (role) {
 				const userRoleModel = new UserRoleModel({
 					idUser: req.user.id,
 					idRole: listRole[i],
-					name: role.name,
+					// name: role.name,
 				});
 				// await UserRoleModel.findOneAndRemove({ idRole: listRole[i] });
 				await userRoleModel.save();
-			}
+			// }
 		}
 		return res.status(status.success).json(baseJson({ code: 0 }));
 	} catch (error) {
