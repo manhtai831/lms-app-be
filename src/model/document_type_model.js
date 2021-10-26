@@ -12,6 +12,8 @@ const DocumentTypeModel = new mongoose.Schema({
 		type: String,
 		required: true,
 	},
+	idSubject:Number,
+	idClass:Number,
 	createdAt: Date,
 	createdBy: Number,
 	updatedAt: Date,

@@ -175,7 +175,19 @@ module.exports = {
         id: 42,
         name: "Lấy tất cả loại tài liệu của 1 môn môn học",
     },
-    //assignmet roles
+    get_document_type_in_subject_class: {
+        id: 43,
+        name: "Lấy tất cả loại tài liệu của 1 môn môn học hoặc class",
+    },
+  create_file_attach: {
+        id: 44,
+        name: "Thêm file tài liệu",
+    },
+  get_list_file_attach: {
+        id: 45,
+        name: "Danh sách file tài liệu",
+    },
+      //assignmet roles
     create_assignment: {
         id: 201,
         name: "thêm assignment",
