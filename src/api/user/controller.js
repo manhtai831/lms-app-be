@@ -80,12 +80,11 @@ async function login(req, res) {
 			var roles = await userRoleModel
 				.find({ idUser: user.id })
 				.select("idRole name");
-			for (var i = 0; i < roles.length; i++) {
-				var role = await roleModel
-					.findOne({ id: roles[i].idRole })
-					.select("id name");
-				roles[i].name = role.name;
-			}
+			// for (var i = 0; i < roles.length; i++) {
+			// 	var role = await roleModel
+			// 		.findOne({ id: roles[i].idRole });
+			// 	roles[i].name = role.name;
+			// }
 			user.permission = roles;
 
 			return res.status(200).json(baseJson({ code: 0, data: user }));
