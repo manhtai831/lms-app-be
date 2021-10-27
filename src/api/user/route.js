@@ -20,7 +20,7 @@ const userRouter = express.Router();
 
 userRouter.post("/register", register);
 userRouter.post("/login", login);
-userRouter.get("/list_user", getListUser);
+// userRouter.get("/list_user", getListUser);
 userRouter.get("/info_user", auth, getUserInfo);
 userRouter.post("/delete_user", auth, deleteUser);
 userRouter.post("/update_user", auth, updateUser);
