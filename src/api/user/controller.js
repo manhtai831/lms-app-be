@@ -26,13 +26,16 @@ async function register(req, res) {
 				.json(baseJson({ code: 99, message: "Tài khoản đã tồn tại" }));
 		}
 
-		encryptedPassword = await bcrypt.hash(password, 10);
+		// encryptedPassword = await bcrypt.hash(password, 10);
 
 		const user = userModel({
-			name: "",
+			name:null,
+			birth:null,
+			avatar: null,
+			phoneNumber: null,
 			userName: userName,
 			email: userName, // sanitize: convert email to lowercase
-			password: encryptedPassword,
+			password: password,
 		});
 
 		const token = jwt.sign(
@@ -70,8 +73,8 @@ async function login(req, res) {
 
 		// Validate if user exist in our database
 		const user = await userModel
-			.findOne({ userName: userName, password: password })
-			.select("id permission name userName email token");
+			.findOne({ userName: userName, password: password})
+			.select("id permission name userName email token birth phoneNumber");
 		if (user) {
 			// Create token
 			const token = jwt.sign({ id: user.id }, process.env.ACCESS_TOKEN_SECRET, {
