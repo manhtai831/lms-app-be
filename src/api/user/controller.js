@@ -10,26 +10,28 @@ const { baseJson } = require("../../utils/base_json");
 async function register(req, res) {
 	let encryptedPassword;
 	try {
-		const { name, userName, password, email } = req.body;
+		const { userName, password} = req.body;
 
-		if (!(email && password && name && userName)) {
-			res.status(400).send("All input is required");
+		if (!(password && userName)) {
+			return res
+				.status(200)
+				.json(baseJson({ code: 99, message: "Yêu cầu tài khoản và mật khẩu" }));
 		}
 
 		const oldUser = await userModel.findOne({ userName: userName });
 
 		if (oldUser) {
 			return res
-				.status(409)
+				.status(200)
 				.json(baseJson({ code: 99, message: "Tài khoản đã tồn tại" }));
 		}
 
 		encryptedPassword = await bcrypt.hash(password, 10);
 
 		const user = userModel({
-			name: name,
+			name: "",
 			userName: userName,
-			email: email.toLowerCase(), // sanitize: convert email to lowercase
+			email: userName, // sanitize: convert email to lowercase
 			password: encryptedPassword,
 		});
 
