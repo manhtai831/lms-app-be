@@ -187,7 +187,11 @@ module.exports = {
         id: 45,
         name: "Danh sách file tài liệu",
     },
-      //assignmet roles
+ get_reposity: {
+        id: 46,
+        name: "Lấy danh mục lớn",
+    },
+    //assignmet roles
     create_assignment: {
         id: 201,
         name: "thêm assignment",
