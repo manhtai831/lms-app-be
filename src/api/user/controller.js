@@ -80,7 +80,7 @@ async function login(req, res) {
 
 		// Validate user input
 		if (!(userName && password)) {
-			res.status(400).send("All input is required");
+			res.status(200).json(baseJson({ code: 99}));
 		}
 
 		// Validate if user exist in our database
