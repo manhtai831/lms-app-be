@@ -36,8 +36,16 @@ async function createSemester(req, res) {
                 baseJson.baseJson({code: 99, message: "Name class is required"})
             );
     }
+    if (req.body.idRepository == null) {
+        return res
+            .status(status.success)
+            .json(
+                baseJson.baseJson({code: 99, message: "IdRepository is required"})
+            );
+    }
     const semesterModel = new SemesterModel({
         name: req.body.name,
+        idRepository: req.body.idRepository,
         description: req.body.description,
         createAt: getNowFormatted(),
         createBy: user,
@@ -71,10 +79,10 @@ async function getAllSemester(req, res) {
     const index = req.query.pageIndex || 1;
     const size = req.query.pageSize || 50;
     await SemesterModel
-        .find()
+        .find({idRepository: req.query.idRepository})
         .skip(Number(index) * Number(size) - Number(size))
         .limit(Number(size))
-        .select("id name description createAt createBy updateAt updateBy").exec((error, result) => {
+        .select("id name description createAt createBy updateAt updateBy idRepository").exec((error, result) => {
             Class.countDocuments(async (err1, count) => {
                 for (var i = 0; i < result.length; i++) {
                     result[i].createBy = await userModel.findOne({id: result[i].createBy.id}).select("id name userName email avatar");

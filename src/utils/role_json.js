@@ -191,6 +191,10 @@ module.exports = {
         id: 46,
         name: "Lấy danh mục lớn",
     },
+ create_reposity: {
+        id: 47,
+        name: "Tạo danh mục lớn",
+    },
     //assignmet roles
     create_assignment: {
         id: 201,

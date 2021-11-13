@@ -19,6 +19,8 @@ const userModel = new mongoose.Schema({
 	token: String,
 	permission: [],
 	avatar: String,
+	chuyenNganh: String,
+	kiHoc : String
 });
 
 autoIncrement.initialize(mongoose.connection);

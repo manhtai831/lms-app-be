@@ -17,6 +17,7 @@ const labRoutes = require("./src/api/lab/route");
 const answerRoutes = require("./src/api/answer/route");
 const questionRouter = require("./src/api/question/route");
 const fileAttachRouter = require("./src/api/file_attach/route");
+const danhMucRouter = require("./src/api/danh_muc_lon/danh_muc_lon_route");
 const status = require("./src/utils/status");
 const dotenv = require("dotenv");
 const express = require("express");
@@ -68,7 +69,7 @@ app.use(
 	assigmentRoutes,
 	labRoutes,
 	answerRoutes,
-	questionRouter,fileAttachRouter
+	questionRouter,fileAttachRouter,danhMucRouter
 );
 
 app.listen(app.get("port"), function () {

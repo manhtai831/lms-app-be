@@ -11,6 +11,7 @@ const semesterModel = new mongoose.Schema({
         required:true,
     },
     description:String,
+    idRepository:Number,
     numberOfPeople:{
         type:Number,
         immutable:true

@@ -86,7 +86,7 @@ async function login(req, res) {
 		// Validate if user exist in our database
 		const user = await userModel
 			.findOne({ userName: userName, password: password})
-			.select("id permission name userName email token birth phoneNumber avatar");
+			.select("id permission name userName email token birth phoneNumber avatar chuyenNganh kiHoc");
 		if (user) {
 			// Create token
 			const token = jwt.sign({ id: user.id }, process.env.ACCESS_TOKEN_SECRET, {
@@ -122,7 +122,7 @@ async function getUserInfo(req, res) {
 		console.log(req.user);
 		var user = await userModel
 			.findOne({ id: req.user.id })
-			.select("id permission name userName email token birth phoneNumber avatar");
+			.select("id permission name userName email token birth phoneNumber avatar chuyenNganh kiHoc");
 		if (user) {
 			const roles = await userRoleModel
 				.find({ idUser: user.id })
@@ -206,7 +206,7 @@ async function changePassword(req, res) {
 		} else {
 			return res
 				.status(200)
-				.json(baseJson({ code: 0, message: "Sai mật khẩu cũ" }));
+				.json(baseJson({ code: 99, message: "Sai mật khẩu cũ" }));
 		}
 	}
 }

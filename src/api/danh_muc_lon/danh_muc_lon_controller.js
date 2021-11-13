@@ -9,11 +9,19 @@ const {
 
 const userModel = require("../../model/user_model");
 const Class = require("../../model/class_model");
-const {create_class, get_all_class, update_class, delete_class, register_class, get_reposity,} = require("../../utils/role_json");
+const {
+    create_class,
+    get_all_class,
+    update_class,
+    delete_class,
+    register_class,
+    get_reposity,
+    create_reposity,
+} = require("../../utils/role_json");
 const {baseJsonPage} = require("../../utils/base_json");
 
 
-async function getResposity(req, res) {
+async function createResposity(req, res) {
     var hasRole = await verifyRole(res, {
         roleId: get_reposity.id,
         userId: req.user.id,
@@ -36,9 +44,10 @@ async function getResposity(req, res) {
                 baseJson.baseJson({code: 99, message: "Name class is required"})
             );
     }
-    const  resposity = ReposityModel({
-        title:req.body.title,
+    const resposity = ReposityModel({
+        title: req.body.title,
         content: req.body.content,
+        image: req.body.image,
         createdAt: getNowFormatted(),
         createdBy: user,
     })
@@ -54,9 +63,9 @@ async function getResposity(req, res) {
 }
 
 
-async function getAllClass(req, res) {
+async function getRepository(req, res) {
     var hasRole = await verifyRole(res, {
-        roleId: get_all_class.id,
+        roleId: create_reposity.id,
         userId: req.user.id,
     });
     if (hasRole === false) {
@@ -67,33 +76,19 @@ async function getAllClass(req, res) {
             );
     }
 
-    const index = req.query.pageIndex || 1;
-    const size = req.query.pageSize || 50;
-    await Class
+    await ReposityModel
         .find()
-        .skip(Number(index) * Number(size) - Number(size))
-        .limit(Number(size))
-        .select("id name description createAt createBy updateAt updateBy").exec((error, result) => {
-            Class.countDocuments(async (err1, count) => {
-                for (var i = 0; i < result.length; i++) {
-                    result[i].createBy = await userModel.findOne({id: result[i].createBy.id}).select("id name userName email avatar");
-                }
-                return res.status(status.success).json(
-                    baseJson.baseJson({
-                        code: 0,
-                        data: baseJsonPage(
-                            Number(index),
-                            Number(size),
-                            count,
-                            result
-                        ),
-                    })
-                );
-            });
+        .select("id title image createAt createBy updateAt updateBy").exec((error, result) => {
             if (error) return baseJson.baseJson({
                 code: 99,
+            });
+            return res.status(status.success).json(
+                baseJson.baseJson({
+                    code: 0,
+                    data: baseJsonPage(0,0,result.length,result)
+                }));
 
-            })
+
         })
 
 }
@@ -175,8 +170,8 @@ async function deleteClass(req, res) {
 }
 
 module.exports = {
-    getResposity,
-    getAllClass,
+    createResposity,
+    getRepository,
     updateClass,
     deleteClass
 
