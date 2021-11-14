@@ -1,4 +1,4 @@
-const Assignment = require("../../model/assignment_model");
+const Quiz = require("../../model/quiz_model");
 const status = require("../../utils/status");
 const baseJson = require("../../utils/base_json");
 const {
@@ -7,18 +7,18 @@ const {
     convertDateTime,
 } = require("../../utils/utils");
 const {
-    create_assignment,
-    get_detail_assignment,
-    get_all_assignments,
-    update_assignment,
-    delete_assignment,
+    create_lab,
+    get_detail_lab,
+    get_all_labs,
+    update_lab,
+    delete_lab, create_quiz, get_quiz,
 } = require("../../utils/role_json");
 const {baseJsonPage} = require("../../utils/base_json");
 
-const createAssignment = async (req, res, next) => {
+const createQuiz = async (req, res, next) => {
     //check role
     var hasRole = await verifyRole(res, {
-        roleId: create_assignment.id,
+        roleId: create_quiz.id,
         userId: req.user.id,
     });
     if (hasRole === false) {
@@ -30,11 +30,11 @@ const createAssignment = async (req, res, next) => {
     }
 
     //set data
-    const assignmentModel = new Assignment({
+    const quizModel = new Quiz({
         title: req.body.title,
-        content: req.body.content,
-        userId: req.body.userId, type: "ASSIGNMENT",
+        content: req.body.content, type: "QUIZ",
 
+        userId: req.body.userId,
         documentId: req.body.documentId,
         startTime: req.body.startTime,
         endTime: req.body.endTime,
@@ -43,51 +43,12 @@ const createAssignment = async (req, res, next) => {
     });
 
     //add data
-    return assignmentModel
+    return quizModel
         .save()
         .then((data) => {
             return res.status(status.success).json(
                 baseJson.baseJson({
-                    code: 0
-                })
-            );
-        })
-        .catch((error) => {
-            next(error);
-            return res.status(status.success).json(
-                baseJson.baseJson({
                     code: 0,
-                    data: error
-                })
-            );
-        });
-};
-
-const getDetailAssignmentById = async (req, res, next) => {
-    //check roles
-    var hasRole = await verifyRole(res, {
-        roleId: get_detail_assignment.id,
-        userId: req.user.id,
-    });
-    if (hasRole === false) {
-        return res
-            .status(status.success)
-            .json(
-                baseJson.baseJson({code: 99, message: "Tài khoản không có quyền"})
-            );
-    }
-
-    //find assignment by id
-    Assignment.findOne({id: req.query.id})
-        .select(
-            "id title content userId documentTypeId startTime endTime createdAt createdBy updatedAt updatedBy"
-        )
-        .then((data) => {
-            return res.status(status.success).json(
-                baseJson.baseJson({
-                    code: 0,
-                    message: "get detail assignment finish!",
-                    data: data,
                 })
             );
         })
@@ -96,10 +57,10 @@ const getDetailAssignmentById = async (req, res, next) => {
         });
 };
 
-const getAllAssignments = async (req, res, next) => {
+const getAllQuiz = async (req, res, next) => {
     //check role
     var hasRole = await verifyRole(res, {
-        roleId: get_all_assignments.id,
+        roleId: get_quiz.id,
         userId: req.user.id,
     });
     if (hasRole === false) {
@@ -109,9 +70,13 @@ const getAllAssignments = async (req, res, next) => {
                 baseJson.baseJson({code: 99, message: "Tài khoản không có quyền"})
             );
     }
+    var filter;
+    if (req.query.idDocument) {
+        filter = {documentId: req.query.idDocument}
+    }
 
-    // find all assignments
-    Assignment.find({documentId: req.query.idDocument})
+    // find all labs
+    Quiz.find(filter)
         .then((data) => {
             return res.status(status.success).json(
                 baseJson.baseJson({
@@ -125,10 +90,10 @@ const getAllAssignments = async (req, res, next) => {
         });
 };
 
-const deleteAssignment = async (req, res, next) => {
+const deleteLab = async (req, res, next) => {
     //check role
     var hasRole = await verifyRole(res, {
-        roleId: delete_assignment.id,
+        roleId: delete_lab.id,
         userId: req.user.id,
     });
     if (hasRole === false) {
@@ -139,13 +104,13 @@ const deleteAssignment = async (req, res, next) => {
             );
     }
 
-    //delete assignment by id
-    Assignment.deleteOne({id: req.query.id})
+    //delete lab by id
+    Lab.deleteOne({id: req.query.id})
         .then(() => {
             return res.status(status.success).json(
                 baseJson.baseJson({
                     code: 0,
-                    message: "delete assignment finish!",
+                    message: "delete lab finish!",
                     data: req.query.id,
                 })
             );
@@ -155,10 +120,10 @@ const deleteAssignment = async (req, res, next) => {
         });
 };
 
-const updateAssignment = async (req, res) => {
+const updatelab = async (req, res) => {
     //check role
     var hasRole = await verifyRole(res, {
-        roleId: update_assignment.id,
+        roleId: update_lab.id,
         userId: req.user.id,
     });
     if (hasRole === false) {
@@ -169,8 +134,8 @@ const updateAssignment = async (req, res) => {
             );
     }
 
-    //update assignment
-    Assignment.updateOne(
+    //update lab
+    Lab.updateOne(
         //update by id
         {id: req.query.id},
         //set and update data
@@ -191,7 +156,7 @@ const updateAssignment = async (req, res) => {
             return res.status(status.success).json(
                 baseJson.baseJson({
                     code: 0,
-                    message: "update assignment finish!",
+                    message: "update lab finish!",
                 })
             );
         })
@@ -201,9 +166,6 @@ const updateAssignment = async (req, res) => {
 };
 
 module.exports = {
-    createAssignment,
-    getDetailAssignmentById,
-    getAllAssignments,
-    deleteAssignment,
-    updateAssignment,
+    createQuiz,
+    getAllQuiz,
 };

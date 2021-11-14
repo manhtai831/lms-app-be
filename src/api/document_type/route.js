@@ -10,7 +10,7 @@ const auth = require("../../middleware/auth_controller");
 const {getDocumentTypeByClassOrSubject} = require("./controller");
 const documentTypeRouter = express.Router();
 
-documentTypeRouter.post("/document_types", auth, createDocumentType);
+documentTypeRouter.post("/create_document_type", auth, createDocumentType);
 documentTypeRouter.get("/document_type", auth, getDocumentTypeById);
 documentTypeRouter.get("/sub_document_type", auth, getDocumentTypeByClassOrSubject);
 documentTypeRouter.get("/document_types", auth, getDepartmentTypes);

@@ -30,7 +30,7 @@ async function createDepartment(req, res) {
 	}
 	const user = await userModel
 		.findOne({ id: req.user.id })
-		.select("id name userName email  ");
+		.select("id name userName email");
 	if (req.body.name == null) {
 		return res
 			.status(status.success)
@@ -39,8 +39,10 @@ async function createDepartment(req, res) {
 			);
 	}
 	const departmentModel = new Department({
-		name: req.body.description,
+		name: req.body.name,
 		description: req.body.description,
+		idSemester : req.body.idSemester,
+		image:req.body.image,
 		createAt: getNowFormatted(),
 		createBy: user,
 	});
@@ -74,7 +76,46 @@ async function getAllDepartment(req, res) {
 		.find()
 		.skip(Number(index) * Number(size) - Number(size))
 		.limit(Number(size))
-		.select("id name description createAt createBy updateAt updateBy")
+		.exec((err, allDepartment) => {
+			departmentModel.countDocuments((err1, count) => {
+				if (err || Number(index) === 0)
+					return res.status(status.server_error).json(
+						baseJson.baseJson({
+							code: 99,
+							message: Number(index) === 0 ? "Error Index" : err.message,
+						})
+					);
+				return res.status(status.success).json(
+					baseJson.baseJson({
+						code: 0,
+						data: baseJsonPage(
+							Number(index),
+							Number(size),
+							count,
+							allDepartment
+						),
+					})
+				);
+			});
+		});
+}
+
+async function getAllDepartments(req, res) {
+	var hasRole = await verifyRole(res, {
+		roleId: danh_sach_nganh.id,
+		userId: req.user.id,
+	});
+	if (hasRole === false) {
+		return res
+			.status(status.success)
+			.json(
+				baseJson.baseJson({ code: 99, message: "Tài khoản không có quyền" })
+			);
+	}
+	const index = req.query.pageIndex || 1;
+	const size = req.query.pageSize || 50;
+	await departmentModel
+		.find({idSemester: req.query.idSemester})
 		.exec((err, allDepartment) => {
 			departmentModel.countDocuments((err1, count) => {
 				if (err || Number(index) === 0)
@@ -180,4 +221,5 @@ module.exports = {
 	getAllDepartment,
 	updateDepartment,
 	deleteDepartment,
+	getAllDepartments
 };

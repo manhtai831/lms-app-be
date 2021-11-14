@@ -13,6 +13,7 @@ const {
 	update_lab,
 	delete_lab,
 } = require("../../utils/role_json");
+const {baseJsonPage} = require("../../utils/base_json");
 
 const createLab = async (req, res, next) => {
 	//check role
@@ -31,9 +32,10 @@ const createLab = async (req, res, next) => {
 	//set data
 	const labModel = new Lab({
 		title: req.body.title,
-		content: req.body.content,
+		content: req.body.content,    type:"LAB",
+
 		userId: req.body.userId,
-		documentTypeId: req.body.documentTypeId,
+		documentId: req.body.documentId,
 		startTime: req.body.startTime,
 		endTime: req.body.endTime,
 		createdAt: getNowFormatted(),
@@ -47,8 +49,6 @@ const createLab = async (req, res, next) => {
 			return res.status(status.success).json(
 				baseJson.baseJson({
 					code: 0,
-					message: "create lab finish!",
-					data: data,
 				})
 			);
 		})
@@ -103,18 +103,18 @@ const getAllLabs = async (req, res, next) => {
 				baseJson.baseJson({ code: 99, message: "Tài khoản không có quyền" })
 			);
 	}
+	var filter;
+	if(req.query.idDocument){
+		filter = {documentId:req.query.idDocument}
+	}
 
 	// find all labs
-	Lab.find()
-		.select(
-			"id title content userId documentTypeId startTime endTime createdAt createdBy updatedAt updatedBy"
-		)
+	Lab.find(filter)
 		.then((data) => {
 			return res.status(status.success).json(
 				baseJson.baseJson({
 					code: 0,
-					message: "get all labs finish!",
-					data: data,
+					data: baseJsonPage(0,0,data.length,data),
 				})
 			);
 		})

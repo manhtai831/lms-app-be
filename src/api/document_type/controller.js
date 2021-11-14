@@ -13,6 +13,7 @@ const {
 	delete_document_type,
 	get_detail_document_type, get_document_type_in_subject_class,
 } = require("../../utils/role_json");
+const {baseJsonPage} = require("../../utils/base_json");
 
 const createDocumentType = async (req, res, next) => {
 	//check role
@@ -28,11 +29,30 @@ const createDocumentType = async (req, res, next) => {
 			);
 	}
 
+	if(req.body.type === 'FILE'){
+		if(req.body.link == null){
+			return res
+				.status(status.success)
+				.json(
+					baseJson.baseJson({ code: 99, message: "\"link\" is required" })
+				);
+		}
+	}else if(req.body.type === 'FOLDER'  || req.body.type === 'QUIZ'|| req.body.type === 'LAB' || req.body.type === 'ASSIGNMENT'){
+
+	}else
+		return res
+			.status(status.success)
+			.json(
+				baseJson.baseJson({ code: 99, message: "\"type\" is unavailable" })
+			);
+
 	//set data
 	const DocumentTypeModel = new DocumentType({
 		name: req.body.name,
 		idClass: req.body.idClass,
 		idSubject: req.body.idSubject,
+		type:req.body.type,
+		link:req.body.link,
 		createdAt: getNowFormatted(),
 		createdBy: req.user.id,
 	});
@@ -142,21 +162,39 @@ const getDepartmentTypes = async (req, res, next) => {
 				baseJson.baseJson({ code: 99, message: "Tài khoản không có quyền" })
 			);
 	}
+	var filter;
+	if(req.query.idSubject && req.query.idClass){
+		filter = {
+			idSubject:req.query.idSubject,
+			idClass: req.query.idClass
+		}
+	}
+	else if(req.query.idSubject){
+		filter = {
+			idSubject:req.query.idSubject
+		}
+	}
+	else if(req.query.idClass){
+		filter = {
+			idClass:req.query.idClass
+		}
+	}
 
 	// find all document types
-	DocumentType.find()
-		.select("id name idSubject idClass")
+	DocumentType.find(filter)
 		.then((data) => {
 			return res.status(status.success).json(
 				baseJson.baseJson({
 					code: 0,
-					message: "get document types finish!",
-					data: data,
+					data: baseJsonPage(0,0,data.length,data),
 				})
 			);
 		})
 		.catch((error) => {
 			next(error);
+			return res.status(400).json(baseJson.baseJson({
+				code: 99,data:error
+			}))
 		});
 };
 

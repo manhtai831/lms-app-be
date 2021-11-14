@@ -179,21 +179,29 @@ module.exports = {
         id: 43,
         name: "Lấy tất cả loại tài liệu của 1 môn môn học hoặc class",
     },
-  create_file_attach: {
+    create_file_attach: {
         id: 44,
         name: "Thêm file tài liệu",
     },
-  get_list_file_attach: {
+    get_list_file_attach: {
         id: 45,
         name: "Danh sách file tài liệu",
     },
- get_reposity: {
+    get_reposity: {
         id: 46,
         name: "Lấy danh mục lớn",
     },
- create_reposity: {
+    create_reposity: {
         id: 47,
         name: "Tạo danh mục lớn",
+    },
+  create_quiz: {
+        id: 48,
+        name: "Tạo quiz",
+    },
+   get_quiz: {
+        id: 49,
+        name: "Lấy danh sách quiz",
     },
     //assignmet roles
     create_assignment: {

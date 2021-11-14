@@ -15,6 +15,7 @@ const classModel = new mongoose.Schema({
         type:Number,
         immutable:true
     },
+    idSubject: Number,
     createAt: Date,
     createBy: Object,
     createBy1: String,

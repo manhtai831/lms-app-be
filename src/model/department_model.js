@@ -12,6 +12,8 @@ const departmentModel = new mongoose.Schema({
 		type: String,
 		required: true,
 	},
+	idSemester:Number,
+	image:String,
 	description: String,
 	createAt: Date,
 	createBy: Object,

@@ -12,6 +12,7 @@ const subjectModel = new mongoose.Schema({
 		type: String,
 		required: true,
 	},
+	idDepartment:Number,
 	description: String,
 	createdAt: Date,
 	createdBy: Number,

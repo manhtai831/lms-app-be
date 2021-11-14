@@ -18,6 +18,7 @@ const answerRoutes = require("./src/api/answer/route");
 const questionRouter = require("./src/api/question/route");
 const fileAttachRouter = require("./src/api/file_attach/route");
 const danhMucRouter = require("./src/api/danh_muc_lon/danh_muc_lon_route");
+const quizRouter = require("./src/api/quiz/quiz_route");
 const status = require("./src/utils/status");
 const dotenv = require("dotenv");
 const express = require("express");
@@ -30,49 +31,52 @@ const app = express();
 app.set("port", process.env.PORT || 3000);
 
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({extended: false}));
 app.use(logger("dev"));
 
 var db = process.env.URI_DB_DEV || process.env.URI_DB_PRODUCT;
 mongoose
-	.connect(db, { useNewUrlParser: true, useUnifiedTopology: true })
-	.then(() => {
-		console.log("Database connected");
-	})
-	.catch((error) => {
-		console.log(error);
-		console.log("Error connecting to database");
-	});
+    .connect(db, {useNewUrlParser: true, useUnifiedTopology: true})
+    .then(() => {
+        console.log("Database connected");
+    })
+    .catch((error) => {
+        console.log(error);
+        console.log("Error connecting to database");
+    });
 
 app.get("/", function (req, res) {
-	if (!res.headersSent) {
-		res.status(status.success).json({
-			message: "TECH NFD API RESTFUL",
-		});
-	}
-	res.end();
+    if (!res.headersSent) {
+        res.status(status.success).json({
+            message: "TECH NFD API RESTFUL",
+        });
+    }
+    res.end();
 });
 
 app.use(
-	"/api",
-	departmentRoutes,
-	userRoutes,
-	subjectRoutes,
-	documentTypeRoutes,
-	documentRoutes,
-	classRoutes,
-	userClassRoutes,
-	subjectClassRoutes,
-	userSemesterRoutes,
-	subjectTypeDocumentRoutes,
-	semesterRoutes,
-	assigmentRoutes,
-	labRoutes,
-	answerRoutes,
-	questionRouter,fileAttachRouter,danhMucRouter
+    "/api",
+    departmentRoutes,
+    userRoutes,
+    subjectRoutes,
+    documentTypeRoutes,
+    documentRoutes,
+    classRoutes,
+    userClassRoutes,
+    subjectClassRoutes,
+    userSemesterRoutes,
+    subjectTypeDocumentRoutes,
+    semesterRoutes,
+    assigmentRoutes,
+    labRoutes,
+    answerRoutes,
+    questionRouter,
+    fileAttachRouter,
+    danhMucRouter,
+    quizRouter
 );
 
 app.listen(app.get("port"), function () {
-	console.log("Listening on port " + app.get("port"));
-	console.log(db);
+    console.log("Listening on port " + app.get("port"));
+    console.log(db);
 });

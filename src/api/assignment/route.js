@@ -9,10 +9,10 @@ const express = require("express");
 const auth = require("../../middleware/auth_controller");
 const assignmentRouter = express.Router();
 
-assignmentRouter.post("/assigments", auth, createAssignment);
+assignmentRouter.post("/create_assigment", auth, createAssignment);
 assignmentRouter.get("/assigment", auth, getDetailAssignmentById);
-assignmentRouter.get("/assigments", auth, getAllAssignments);
-assignmentRouter.delete("/assigments", auth, deleteAssignment);
-assignmentRouter.put("/assigments", auth, updateAssignment);
+assignmentRouter.get("/get_all_assigments", auth, getAllAssignments);
+assignmentRouter.get("/delete_assigments", auth, deleteAssignment);
+assignmentRouter.post("/update_assigments", auth, updateAssignment);
 
 module.exports = assignmentRouter;

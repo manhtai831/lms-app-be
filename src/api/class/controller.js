@@ -37,6 +37,7 @@ async function createClass(req, res) {
     const classModel = new Class({
         name: req.body.name,
         description: req.body.description,
+        idSubject: req.body.idSubject,
         createAt: getNowFormatted(),
         createBy: user,
     });
@@ -69,10 +70,8 @@ async function getAllClass(req, res) {
     const index = req.query.pageIndex || 1;
     const size = req.query.pageSize || 50;
     await Class
-        .find()
-        .skip(Number(index) * Number(size) - Number(size))
-        .limit(Number(size))
-        .select("id name description createAt createBy updateAt updateBy").exec((error, result) => {
+        .find({idSubject:req.query.idSubject})
+        .exec((error, result) => {
             Class.countDocuments(async (err1, count) => {
                 for (var i = 0; i < result.length; i++) {
                     result[i].createBy = await userModel.findOne({id: result[i].createBy.id}).select("id name userName email avatar");

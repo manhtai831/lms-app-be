@@ -12,6 +12,7 @@ const {
 	update_subject,
 	delete_subject,
 } = require("../../utils/role_json");
+const {baseJsonPage} = require("../../utils/base_json");
 
 const createSubject = async (req, res, next) => {
 	//check role
@@ -31,6 +32,7 @@ const createSubject = async (req, res, next) => {
 	const subjectModel = new Subject({
 		name: req.body.name,
 		description: req.body.description,
+		idDepartment: req.body.idDepartment,
 		createdAt: getNowFormatted(),
 		createdBy: req.user.id,
 	});
@@ -41,9 +43,7 @@ const createSubject = async (req, res, next) => {
 		.then((data) => {
 			return res.status(status.success).json(
 				baseJson.baseJson({
-					code: 0,
-					message: "create subject finish!",
-					data: data,
+					code: 0
 				})
 			);
 		})
@@ -67,14 +67,12 @@ const getAllSubjects = async (req, res, next) => {
 	}
 
 	//find all subjects
-	Subject.find()
-		.select("name description id")
+	Subject.find({idDepartment: req.query.idDepartment})
 		.then((data) => {
 			return res.status(status.success).json(
 				baseJson.baseJson({
 					code: 0,
-					message: "get subjects finish!",
-					data: data,
+					data:baseJsonPage(0,0,data.length,data)
 				})
 			);
 		})
