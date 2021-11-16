@@ -15,6 +15,8 @@ const quizModel = new mongoose.Schema({
     documentId: Number,
     startTime: String,
     endTime: String,
+    statusWork:String,
+    timeFinish:String,
     createdAt: Date,
     createdBy: Number,
     updatedAt: Date,

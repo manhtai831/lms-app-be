@@ -1,4 +1,5 @@
 const Question = require("../../model/question_model");
+const AnswerModel = require("../../model/answer_model");
 const status = require("../../utils/status");
 const baseJson = require("../../utils/base_json");
 const {
@@ -13,6 +14,7 @@ const {
 	update_question,
 	delete_question,
 } = require("../../utils/role_json");
+const {baseJsonPage} = require("../../utils/base_json");
 
 const createQuestion = async (req, res, next) => {
 	//check role
@@ -31,9 +33,12 @@ const createQuestion = async (req, res, next) => {
 	//set data
 	const questionModel = new Question({
 		content: req.body.content,
+		idQuiz:req.body.idQuiz,
 		createdAt: getNowFormatted(),
 		createdBy: req.user.id,
 	});
+
+
 
 	//add data
 	return questionModel
@@ -42,7 +47,6 @@ const createQuestion = async (req, res, next) => {
 			return res.status(status.success).json(
 				baseJson.baseJson({
 					code: 0,
-					message: "create question finish!",
 					data: data,
 				})
 			);
@@ -68,7 +72,6 @@ const getDetailQuestionById = async (req, res, next) => {
 
 	//find question by id
 	Question.findOne({ id: req.query.id })
-		.select("id content createdAt createdBy updatedAt updatedBy")
 		.then((data) => {
 			return res.status(status.success).json(
 				baseJson.baseJson({
@@ -96,16 +99,25 @@ const getAllQuestions = async (req, res, next) => {
 				baseJson.baseJson({ code: 99, message: "Tài khoản không có quyền" })
 			);
 	}
+	var filter;
+	if(req.query.idQuiz){
+		filter = {idQuiz: req.query.idQuiz}
+	}
 
 	// find all questions
-	Question.find()
-		.select("id content createdAt createdBy updatedAt updatedBy")
-		.then((data) => {
+	Question.find(filter)
+		.then(async (data) => {
+
+			var listQuestion = data;
+			for(var i = 0; i< listQuestion.length; i++){
+				var listCauTraLoi = await AnswerModel.find({idCauHoi:listQuestion[i].id});
+				listQuestion[i].listCauTraLoi = listCauTraLoi;
+			}
+
 			return res.status(status.success).json(
 				baseJson.baseJson({
 					code: 0,
-					message: "get all question finish!",
-					data: data,
+					data: baseJsonPage(0,0,data.length,listQuestion),
 				})
 			);
 		})

@@ -12,13 +12,17 @@ const semesterModel = new mongoose.Schema({
     },
     description:String,
     idRepository:Number,
+    startTime: String,
+    endTime:String,
+    repository:Object,
     numberOfPeople:{
         type:Number,
         immutable:true
     },
-    createAt: Date,
+    status:Number,
+    createAt: String,
     createBy: Object,
-    updateAt: Date,
+    updateAt: String,
     updateBy: Object,
 });
 

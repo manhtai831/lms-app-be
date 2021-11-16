@@ -4,7 +4,7 @@ const baseJson = require("../../utils/base_json");
 const {
     getNowFormatted,
     verifyRole,
-    convertDateTime,
+    convertDateTime, getMoreTime,
 } = require("../../utils/utils");
 const {
     create_lab,
@@ -32,7 +32,8 @@ const createQuiz = async (req, res, next) => {
     //set data
     const quizModel = new Quiz({
         title: req.body.title,
-        content: req.body.content, type: "QUIZ",
+        content: req.body.content,
+        type: "QUIZ",
 
         userId: req.body.userId,
         documentId: req.body.documentId,
@@ -164,8 +165,44 @@ const updatelab = async (req, res) => {
             next(error);
         });
 };
+const updateStatusQuiz = async (req, res) => {
+
+    if (req.query.idQuiz == null) {
+        return res.status(status.success).json(
+            baseJson.baseJson({
+                code: 99,
+                data: "\"idQuiz\" is required"
+            })
+        );
+    }
+    var timeFinish;
+    var status1;
+    if (req.query.statusWork === "Đang làm") {
+        timeFinish = getMoreTime(15)
+    }
+    status1 = req.query.statusWork;
+    return Quiz.updateOne(
+        {id: req.query.idQuiz},
+        {
+            $set: {
+                statusWork: status1,
+                timeFinish: timeFinish
+            },
+        }
+    )
+        .then(() => {
+            return res.status(status.success).json(
+                baseJson.baseJson({
+                    code: 0,
+                })
+            );
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+};
 
 module.exports = {
     createQuiz,
-    getAllQuiz,
+    getAllQuiz, updateStatusQuiz
 };

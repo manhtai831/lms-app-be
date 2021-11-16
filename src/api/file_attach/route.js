@@ -16,7 +16,7 @@ router.get("/get_list_file_attach_by_user", auth, getListFileAttachByIdUser);
 router.get("/get_list_file_attach_by_document", auth, getListFileAttachByIdDocument);
 router.get("/get_list_file_attach_by_type_document", auth, getListFileAttachByIdTypeDocument);
 router.post("/update_file_attach", auth, updateFileAttach);
-router.post("/delete_file_attach", auth, deleteFileAttach);
+router.get("/delete_file_attach", auth, deleteFileAttach);
 
 
 module.exports = router;

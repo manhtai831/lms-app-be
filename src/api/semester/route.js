@@ -6,9 +6,9 @@ const {createSemester, getAllSemester, updateSemester, deleteSemester} = require
 
 const router = express.Router();
 
-router.post("/semester", auth, createSemester);
-router.get("/semester", auth, getAllSemester);
-router.put("/semester", auth, updateSemester);
-router.delete("/semester", auth, deleteSemester);
+router.post("/create_semester", auth, createSemester);
+router.get("/get_semester", auth, getAllSemester);
+router.post("/update_semester", auth, updateSemester);
+router.post("/delete_semester", auth, deleteSemester);
 
 module.exports = router;

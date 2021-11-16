@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const autoIncrement = require("mongoose-auto-increment");
+const AnswerModel = require("../model/answer_model")
 
 mongoose.Promise = global.Promise;
 
@@ -9,6 +10,8 @@ const questionModel = new mongoose.Schema({
 		immutable: true,
 	},
 	content: String,
+	listCauTraLoi:[],
+	idQuiz:Number,
 	createdAt: Date,
 	createdBy: Number,
 	updatedAt: Date,

@@ -1,5 +1,5 @@
 const {
-    createQuiz, getAllQuiz
+    createQuiz, getAllQuiz, updateStatusQuiz,
 } = require("./quiz_controller");
 const express = require("express");
 const auth = require("../../middleware/auth_controller");
@@ -10,5 +10,6 @@ questionRouter.post("/create_quiz", auth, createQuiz);
 questionRouter.get("/get_all_quiz", auth, getAllQuiz);
 // questionRouter.get("/questions", auth, deleteQuestion);
 // questionRouter.post("/questions", auth, updateQuestion);
+questionRouter.get("/update_status_quiz", auth, updateStatusQuiz);
 
 module.exports = questionRouter;

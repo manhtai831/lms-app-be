@@ -35,13 +35,13 @@ async function createResposity(req, res) {
     }
 
     const user = await userModel
-        .findOne({id: req.user.id});
+        .findOne({id: req.user.id}).select("name");
 
     if (req.body.title == null) {
         return res
             .status(status.success)
             .json(
-                baseJson.baseJson({code: 99, message: "Name class is required"})
+                baseJson.baseJson({code: 99, message: "Name repository is required"})
             );
     }
     const resposity = ReposityModel({
@@ -50,6 +50,8 @@ async function createResposity(req, res) {
         image: req.body.image,
         createdAt: getNowFormatted(),
         createdBy: user,
+        updateAt: null,
+        updateBy: null
     })
     return resposity
         .save()
@@ -64,28 +66,33 @@ async function createResposity(req, res) {
 
 
 async function getRepository(req, res) {
-    var hasRole = await verifyRole(res, {
-        roleId: create_reposity.id,
-        userId: req.user.id,
-    });
-    if (hasRole === false) {
-        return res
-            .status(status.success)
-            .json(
-                baseJson.baseJson({code: 99, message: "Tài khoản không có quyền"})
-            );
+    // var hasRole = await verifyRole(res, {
+    //     roleId: create_reposity.id,
+    //     userId: req.user.id,
+    // });
+    // if (hasRole === false) {
+    //     return res
+    //         .status(status.success)
+    //         .json(
+    //             baseJson.baseJson({code: 99, message: "Tài khoản không có quyền"})
+    //         );
+    // }
+    var filter;
+    if (req.query.title) {
+        filter=   { "title": { "$regex": req.query.title, "$options": "i" } }
+        // filter = {title :req.query.title}
     }
 
     await ReposityModel
-        .find()
-        .select("id title image createAt createBy updateAt updateBy").exec((error, result) => {
+        .find(filter)
+        .exec((error, result) => {
             if (error) return baseJson.baseJson({
                 code: 99,
             });
             return res.status(status.success).json(
                 baseJson.baseJson({
                     code: 0,
-                    data: baseJsonPage(0,0,result.length,result)
+                    data: baseJsonPage(0, 0, result.length, result)
                 }));
 
 
@@ -93,39 +100,40 @@ async function getRepository(req, res) {
 
 }
 
-async function updateClass(req, res) {
-    var hasRole = await verifyRole(res, {
-        roleId: update_class.id,
-        userId: req.user.id,
-    });
-    if (hasRole === false) {
-        return res
-            .status(status.success)
-            .json(
-                baseJson.baseJson({code: 99, message: "Tài khoản không có quyền"})
-            );
-    }
+async function updateRepository(req, res) {
+    /* var hasRole = await verifyRole(res, {
+         roleId: update_class.id,
+         userId: req.user.id,
+     });
+     if (hasRole === false) {
+         return res
+             .status(status.success)
+             .json(
+                 baseJson.baseJson({code: 99, message: "Tài khoản không có quyền"})
+             );
+     }*/
     if (req.body.id == null) {
         return res
             .status(status.success)
             .json(
-                baseJson.baseJson({code: 99, message: "ID class is required"})
+                baseJson.baseJson({code: 99, message: "ID repository is required"})
             );
     }
 
     const user = await userModel
         .findOne({id: req.user.id})
-        .select("id name userName email");
+        .select(" name ");
 
-    return Class
+    return ReposityModel
         .updateOne(
             {id: req.body.id},
             {
                 $set: {
                     updateAt: getNowFormatted(),
                     updateBy: user,
-                    name: req.body.name,
-                    description: req.body.description,
+                    title: req.body.title,
+                    content: req.body.content,
+                    image: req.body.image
                 },
             }
         )
@@ -138,8 +146,8 @@ async function updateClass(req, res) {
         });
 }
 
-async function deleteClass(req, res) {
-    var hasRole = await verifyRole(res, {
+async function deleteRepository(req, res) {
+    /*ar hasRole = await verifyRole(res, {
         roleId: delete_class.id,
         userId: req.user.id,
     });
@@ -149,8 +157,8 @@ async function deleteClass(req, res) {
             .json(
                 baseJson.baseJson({code: 99, message: "Tài khoản không có quyền"})
             );
-    }
-    if (req.query.id == null) {
+    }*/
+    if (req.body.id == null) {
         return res
             .status(status.success)
             .json(
@@ -158,8 +166,8 @@ async function deleteClass(req, res) {
             );
     }
 
-    return Class
-        .deleteOne({id: req.query.id})
+    return ReposityModel
+        .deleteOne({id: req.body.id})
         .then(() => {
             return res.status(status.success).json(baseJson.baseJson({code: 0}));
         })
@@ -172,7 +180,7 @@ async function deleteClass(req, res) {
 module.exports = {
     createResposity,
     getRepository,
-    updateClass,
-    deleteClass
+    updateRepository,
+    deleteRepository
 
 };

@@ -3,6 +3,7 @@ const {create_document_type, create_file_attach, get_list_file_attach} = require
 const status = require("../../utils/status");
 const baseJson = require("../../utils/base_json");
 const FileAttachModel = require("../../model/file_attach_model");
+const {baseJsonPage} = require("../../utils/base_json");
 
 async function createFileAttach(req, res) {
     //check role
@@ -61,14 +62,18 @@ async function getListFileAttach(req, res) {
             );
     }
 
+    var filter;
+    if(req.query.idDocument){
+        filter = {idDocument  : req.query.idDocument}
+    }
 
     //add data
-    return FileAttachModel.find()
+    return FileAttachModel.find(filter)
         .then((data) => {
             return res.status(status.success).json(
                 baseJson.baseJson({
                     code: 0,
-                    data: data
+                    data: baseJsonPage(0,0,data.length,data)
                 })
             );
         })
@@ -178,7 +183,7 @@ async function updateFileAttach(req, res) {
 }
 
 async function deleteFileAttach(req, res) {
-    return  FileAttachModel.deleteOne({id: req.body.id})
+    return  FileAttachModel.deleteOne({id: req.query.id})
         .then((data) => {
             return res.status(status.success).json(
                 baseJson.baseJson({

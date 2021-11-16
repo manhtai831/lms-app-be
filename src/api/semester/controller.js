@@ -9,9 +9,12 @@ const {
 const userModel = require("../../model/user_model");
 const SemesterModel = require("../../model/semester_model");
 const Class = require("../../model/class_model");
-const {create_class, get_all_class, update_class, delete_class, register_class, add_semester, get_all_semester,
-    update_semester, delete_semester,} = require("../../utils/role_json");
+const {
+    create_class, get_all_class, update_class, delete_class, register_class, add_semester, get_all_semester,
+    update_semester, delete_semester,
+} = require("../../utils/role_json");
 const {baseJsonPage} = require("../../utils/base_json");
+const ReposityModel = require("../../model/resposity");
 
 
 async function createSemester(req, res) {
@@ -43,10 +46,14 @@ async function createSemester(req, res) {
                 baseJson.baseJson({code: 99, message: "IdRepository is required"})
             );
     }
+    console.log(getNowFormatted());
     const semesterModel = new SemesterModel({
         name: req.body.name,
         idRepository: req.body.idRepository,
         description: req.body.description,
+        startTime: req.body.startTime,
+        endTime: req.body.endTime,
+        status: req.body.status,
         createAt: getNowFormatted(),
         createBy: user,
     });
@@ -75,17 +82,28 @@ async function getAllSemester(req, res) {
                 baseJson.baseJson({code: 99, message: "Tài khoản không có quyền"})
             );
     }
+    var filter;
+    var repo;
+    if (req.query.idRepository) {
+        filter = {idRepository: req.query.idRepository};
+
+    }if (req.query.name) {
+        filter=   { "name": { "$regex": req.query.name, "$options": "i" } }
+
+    }
 
     const index = req.query.pageIndex || 1;
     const size = req.query.pageSize || 50;
     await SemesterModel
-        .find({idRepository: req.query.idRepository})
+        .find(filter)
         .skip(Number(index) * Number(size) - Number(size))
         .limit(Number(size))
-        .select("id name description createAt createBy updateAt updateBy idRepository").exec((error, result) => {
+       .exec((error, result) => {
             Class.countDocuments(async (err1, count) => {
                 for (var i = 0; i < result.length; i++) {
                     result[i].createBy = await userModel.findOne({id: result[i].createBy.id}).select("id name userName email avatar");
+                    repo = await ReposityModel.findOne({id:result[i].idRepository});
+                    result[i].repository = repo;
                 }
                 return res.status(status.success).json(
                     baseJson.baseJson({
@@ -139,7 +157,11 @@ async function updateSemester(req, res) {
                     updateAt: getNowFormatted(),
                     updateBy: user,
                     name: req.body.name,
+                    idRepository: req.body.idRepository,
                     description: req.body.description,
+                    startTime: req.body.startTime,
+                    endTime: req.body.endTime,
+                    status: req.body.status,
                 },
             }
         )
@@ -164,7 +186,7 @@ async function deleteSemester(req, res) {
                 baseJson.baseJson({code: 99, message: "Tài khoản không có quyền"})
             );
     }
-    if (req.query.id == null) {
+    if (req.body.id == null) {
         return res
             .status(status.success)
             .json(
@@ -173,7 +195,7 @@ async function deleteSemester(req, res) {
     }
 
     return SemesterModel
-        .deleteOne({id: req.query.id})
+        .deleteOne({id: req.body.id})
         .then(() => {
             return res.status(status.success).json(baseJson.baseJson({code: 0}));
         })

@@ -8,6 +8,7 @@ const answerModel = new mongoose.Schema({
 		type: Number,
 		immutable: true,
 	},
+	idCauHoi:Number,
 	content: String,
 	createdAt: Date,
 	createdBy: Number,

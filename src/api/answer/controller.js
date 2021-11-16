@@ -31,6 +31,7 @@ const createAnswer = async (req, res, next) => {
 	//set data
 	const answerModel = new Answer({
 		content: req.body.content,
+		idCauHoi:req.body.idCauHoi,
 		createdAt: getNowFormatted(),
 		createdBy: req.user.id,
 	});
@@ -42,7 +43,6 @@ const createAnswer = async (req, res, next) => {
 			return res.status(status.success).json(
 				baseJson.baseJson({
 					code: 0,
-					message: "create answer finish!",
 					data: data,
 				})
 			);
@@ -99,12 +99,10 @@ const getAllAnswers = async (req, res, next) => {
 
 	// find all answers
 	Answer.find()
-		.select("id content createdAt createdBy updatedAt updatedBy")
 		.then((data) => {
 			return res.status(status.success).json(
 				baseJson.baseJson({
 					code: 0,
-					message: "get all answer finish!",
 					data: data,
 				})
 			);
