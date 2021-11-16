@@ -19,6 +19,7 @@ const {
     create_reposity,
 } = require("../../utils/role_json");
 const {baseJsonPage} = require("../../utils/base_json");
+const {uploadImage} = require("../../utils/image");
 
 
 async function createResposity(req, res) {
@@ -44,10 +45,17 @@ async function createResposity(req, res) {
                 baseJson.baseJson({code: 99, message: "Name repository is required"})
             );
     }
+    var resp;
+    if (req.body.data) {
+        var a = await uploadImage(req.body.data);
+        if (a) {
+            resp = a.url;
+        }
+    }
     const resposity = ReposityModel({
         title: req.body.title,
         content: req.body.content,
-        image: req.body.image,
+        image: resp,
         createdAt: getNowFormatted(),
         createdBy: user,
         updateAt: null,
@@ -123,7 +131,13 @@ async function updateRepository(req, res) {
     const user = await userModel
         .findOne({id: req.user.id})
         .select(" name ");
-
+    var resp;
+    if (req.body.data) {
+        var a = await uploadImage(req.body.data);
+        if (a) {
+            resp = a.url;
+        }
+    }
     return ReposityModel
         .updateOne(
             {id: req.body.id},
@@ -133,7 +147,7 @@ async function updateRepository(req, res) {
                     updateBy: user,
                     title: req.body.title,
                     content: req.body.content,
-                    image: req.body.image
+                    image: resp
                 },
             }
         )

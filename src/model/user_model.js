@@ -14,6 +14,7 @@ const userModel = new mongoose.Schema({
 	},
 	password: String,
 	email: String,
+	data: String,
 	gender: Number,
 	address: String,
 	maSV: String,

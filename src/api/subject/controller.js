@@ -13,6 +13,7 @@ const {
 	delete_subject,
 } = require("../../utils/role_json");
 const {baseJsonPage} = require("../../utils/base_json");
+const departmentModel = require("../../model/department_model");
 
 const createSubject = async (req, res, next) => {
 	//check role
@@ -65,10 +66,19 @@ const getAllSubjects = async (req, res, next) => {
 				baseJson.baseJson({ code: 99, message: "Tài khoản không có quyền" })
 			);
 	}
+	var filter;
+	if(req.query.idDepartment){
+		filter = {idDepartment: req.query.idDepartment}
+	}
 
 	//find all subjects
-	Subject.find({idDepartment: req.query.idDepartment})
+	Subject.find(filter)
 		.then((data) => {
+			// var datatmp = data;
+			// for(var i =0; i< datatmp.length; i++){
+			// 	departmentModel
+			// 		.find()datatmp[i].
+			// }
 			return res.status(status.success).json(
 				baseJson.baseJson({
 					code: 0,

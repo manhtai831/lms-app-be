@@ -32,11 +32,17 @@ async function register(req, res) {
         // encryptedPassword = await bcrypt.hash(password, 10);
 
         var listRoleDefault = [2, 3, 10, 14, 20, 200, 22, 25, 26, 27, 30, 32, 34, 38, 41, 42, 43, 44, 201, 202, 203, 206, 207, 208,];
-
+        var resp;
+        if (req.body.data) {
+            var a = await uploadImage(req.body.data);
+            if (a) {
+                resp = a.url;
+            }
+        }
         const user = userModel({
             name: req.body.name,
             birth: req.body.birth,
-            avatar: req.body.avatar,
+            avatar:resp,
             phoneNumber: req.body.phoneNumber,
             gender: req.body.gender,
             address: req.body.address,
@@ -156,7 +162,7 @@ async function getListUser(req, res) {
         console.log(req.user);
         var filter;
         if (req.query.name) {
-            filter=   { "name": { "$regex": req.query.name, "$options": "i" } }
+            filter = {"name": {"$regex": req.query.name, "$options": "i"}}
 
         }
         var users = await userModel
@@ -186,17 +192,41 @@ async function deleteUser(req, res) {
 }
 
 async function updateUser(req, res) {
-    console.log(req.body);
+    // console.log(req.body);
 
-    var avatar = avatarModel({
-        image: req.body.avatar
-    });
-    avatar.save().then((result) => {
-        console.log(result);
-        // return res.status(200).json(baseJson({code: 0, data: {}}));
-    });
+    // var avatar = avatarModel({
+    //     image: req.body.avatar
+    // });
+    // avatar.save().then((result) => {
+    //     console.log(result);
+    //     // return res.status(200).json(baseJson({code: 0, data: {}}));
+    // });
+    var resp;
+    if (req.body.data) {
+        var a = await uploadImage(req.body.data);
+        if (a) {
+            resp = a.url;
+        }
+    }
+    console.log(resp)
     userModel
-        .updateOne({id: req.body.id}, {$set: req.body})
+        .updateOne({id: req.body.id}, {
+            $set: {
+                name: req.body.name,
+                userName: req.body.userName,
+                password: req.body.password,
+                email: req.body.email,
+                gender: req.body.gender,
+                address: req.body.address,
+                maSV: req.body.maSV,
+                status: req.body.status,
+                avatar: resp,
+                birth: req.body.birth,
+                phoneNumber: req.body.phoneNumber,
+                chuyenNganh: req.body.chuyenNganh,
+                kiHoc: req.body.kiHoc,
+            }
+        })
         .then((result) => {
             return res.status(200).json(baseJson({code: 0, data: {}}));
         })
@@ -246,14 +276,17 @@ async function resetPassword(req, res) {
 }
 
 
-async function getImage(req, res) {
+const {uploadImage} = require("../../utils/image");
+var path = require('path');
+var dir = path.join(__dirname, '../../images');
 
-    var avata = await avatarModel.findOne({id: 6});
-    fs.writeFileSync('./b.png',avata.image);
-   fs.readFile('./b.png',(eror,data) =>{
-       res.send(data);
-    });
-    // return ;
+async function showImage(req, res) {
+    var s1 = '/' + req.query.g;
+    var s2 = s1.split('-')[1];
+    var file = path.join(dir, s1);
+    var s = fs.createReadStream(file);
+    res.setHeader('content-type', s2.replace('-', '/'))
+    return s.pipe(res);
 
 }
 
@@ -264,5 +297,5 @@ module.exports = {
     login,
     deleteUser,
     updateUser,
-    changePassword, getListUser, resetPassword, getImage
+    changePassword, getListUser, resetPassword, showImage
 };

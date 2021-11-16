@@ -13,11 +13,13 @@ const departmentModel = new mongoose.Schema({
 		required: true,
 	},
 	idSemester:Number,
+	semester: Object,
 	image:String,
+	status:Number,
 	description: String,
-	createAt: Date,
+	createAt: String,
 	createBy: Object,
-	updateAt: Date,
+	updateAt: String,
 	updateBy: Object,
 });
 

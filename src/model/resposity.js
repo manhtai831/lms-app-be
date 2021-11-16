@@ -10,6 +10,7 @@ const reposityModel = new mongoose.Schema({
     },
     title:String,
     image: String,
+    data: String,
     content: String,
     createdAt: String,
     createdBy: Object,
