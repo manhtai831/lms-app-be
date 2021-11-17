@@ -16,10 +16,11 @@ const classModel = new mongoose.Schema({
         immutable:true
     },
     idSubject: Number,
-    createAt: Date,
+    subject:Object,
+    createAt: String,
     createBy: Object,
     createBy1: String,
-    updateAt: Date,
+    updateAt: String,
     updateBy: Object,
 });
 

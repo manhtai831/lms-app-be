@@ -4,10 +4,12 @@ const jwt = require("jsonwebtoken");
 const userModel = require("../../model/user_model");
 const avatarModel = require("../../model/avatar_model");
 const userRoleModel = require("../../model/user_role_model");
-const roleModel = require("../../model/role_model");
+const RoleModel = require("../../model/role_model");
+// const roleModel = require("../../model/role_model");
 const bcrypt = require("bcrypt");
 const {baseJson, baseJsonPage} = require("../../utils/base_json");
 const UserRoleModel = require("../../model/user_role_model");
+const GroupRoleModel = require("../../model/group_role");
 const fs = require('fs')
 
 async function register(req, res) {
@@ -31,7 +33,6 @@ async function register(req, res) {
 
         // encryptedPassword = await bcrypt.hash(password, 10);
 
-        var listRoleDefault = [2, 3, 10, 14, 20, 200, 22, 25, 26, 27, 30, 32, 34, 38, 41, 42, 43, 44, 201, 202, 203, 206, 207, 208,];
         var resp;
         if (req.body.data) {
             var a = await uploadImage(req.body.data);
@@ -42,7 +43,7 @@ async function register(req, res) {
         const user = userModel({
             name: req.body.name,
             birth: req.body.birth,
-            avatar:resp,
+            avatar: resp,
             phoneNumber: req.body.phoneNumber,
             gender: req.body.gender,
             address: req.body.address,
@@ -105,17 +106,19 @@ async function login(req, res) {
                 expiresIn: process.env.ACCESS_TOKEN_LIFE,
             });
             user.token = token;
-
-            var roles = await userRoleModel
-                .find({idUser: user.id})
-                .select("idRole name");
-            // for (var i = 0; i < roles.length; i++) {
-            // 	var role =await roleModel
-            // 		.findOne({ id: roles[i].idRole });
-            // 	console.log(role.name);
-            // 	roles[i].name = role.name;
-            // }
-            user.permission = roles;
+            if (user.idGroup) {
+                var group = await GroupRoleModel.findOne({id: user.idGroup});
+                console.log(group)
+                var roles = [];
+                for (var i = 0; i < group.roles.length; i++) {
+                    var role = await RoleModel
+                        .findOne({id: group.roles[i]})
+                        .select("idRole name");
+                    if(role)
+                    roles.push(role);
+                }
+                user.permission = roles;
+            }
 
             return res.status(200).json(baseJson({code: 0, data: user}));
         }
@@ -134,18 +137,24 @@ async function getUserInfo(req, res) {
         console.log(req.user);
         var user = await userModel
             .findOne({id: req.user.id})
-            .select("id permission name userName email token birth phoneNumber avatar chuyenNganh kiHoc");
+            .select("id permission name userName email token birth phoneNumber avatar chuyenNganh kiHoc idGroup");
         if (user) {
-            const roles = await userRoleModel
-                .find({idUser: user.id})
-                .select("idRole name");
-            // for (var i = 0; i < roles.length; i++) {
-            // 	const role = await roleModel
-            // 		.findOne({ id: roles[i].idRole })
-            // 		.select("id name");
-            // 	roles[i].name = role.name;
-            // }
-            user.permission = roles;
+            if (user.idGroup) {
+                var group = await GroupRoleModel.findOne({id: user.idGroup});
+                console.log(group);
+                var roles = [];
+                for (var i = 0; i < group.roles.length; i++) {
+                    var role = await RoleModel
+                        .findOne({id: group.roles[i]})
+                        .select("idRole name");
+                    if(role){  console.log(role);
+                        roles.push(role);
+
+                    }
+
+                }
+                user.permission = roles;
+            }
 
             return res.status(200).json(baseJson({code: 0, data: user}));
         }
@@ -225,6 +234,7 @@ async function updateUser(req, res) {
                 phoneNumber: req.body.phoneNumber,
                 chuyenNganh: req.body.chuyenNganh,
                 kiHoc: req.body.kiHoc,
+                idGroup: req.body.idGroup,
             }
         })
         .then((result) => {

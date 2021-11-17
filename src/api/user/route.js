@@ -32,7 +32,7 @@ userRouter.get("/upload", showImage);
 // userRouter.get("/image", getImage);
 
 userRouter.post("/add_role", addRole);
-userRouter.get("/get_all_role", auth, getAllRole);
+userRouter.post("/get_all_role", auth, getAllRole);
 userRouter.post("/update_role", auth, updateRole);
 userRouter.get("/delete_role", auth, deleteRole);
 

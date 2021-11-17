@@ -7,6 +7,6 @@ const router = express.Router();
 router.post("/create_class", auth, createClass);
 router.get("/get_all_class", auth, getAllClass);
 router.post("/update_class", auth, updateClass);
-router.get("/delete_class", auth, deleteClass);
+router.post("/delete_class", auth, deleteClass);
 
 module.exports = router;

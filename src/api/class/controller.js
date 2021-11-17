@@ -8,6 +8,7 @@ const {
 
 const userModel = require("../../model/user_model");
 const Class = require("../../model/class_model");
+const SubjectModel = require("../../model/subject_model");
 const {create_class, get_all_class, update_class, delete_class, register_class,} = require("../../utils/role_json");
 const {baseJsonPage} = require("../../utils/base_json");
 
@@ -69,30 +70,37 @@ async function getAllClass(req, res) {
 
     const index = req.query.pageIndex || 1;
     const size = req.query.pageSize || 50;
-    await Class
-        .find({idSubject:req.query.idSubject})
-        .exec((error, result) => {
-            Class.countDocuments(async (err1, count) => {
-                for (var i = 0; i < result.length; i++) {
-                    result[i].createBy = await userModel.findOne({id: result[i].createBy.id}).select("id name userName email avatar");
-                }
-                return res.status(status.success).json(
-                    baseJson.baseJson({
-                        code: 0,
-                        data: baseJsonPage(
-                            Number(index),
-                            Number(size),
-                            count,
-                            result
-                        ),
-                    })
-                );
-            });
-            if (error) return baseJson.baseJson({
-                code: 99,
+    var filter;
+    if (req.query.idSubject) {
+        filter = {idSubject: req.query.idSubject};
+    }
+    if (req.query.name) {
+        filter=   { "name": { "$regex": req.query.name, "$options": "i" } }
+        // filter = {title :req.query.title}
+    }
 
-            })
-        })
+    await Class
+        .find(filter)
+        .exec(async (error, result) => {
+            var datatmp = result;
+            for (var i = 0; i < datatmp.length; i++) {
+                // result[i].createBy = await userModel.findOne({id: result[i].createBy.id}).select("id name userName email avatar");
+                datatmp[i].subject = await SubjectModel.findOne({id: datatmp[i].idSubject});
+                console.log(datatmp[i].subject)
+            }
+            return res.status(status.success).json(
+                baseJson.baseJson({
+                    code: 0,
+                    data: baseJsonPage(
+                        Number(index),
+                        Number(size),
+                        datatmp.length,
+                        datatmp
+                    ),
+                })
+            );
+        });
+
 
 }
 
@@ -153,7 +161,7 @@ async function deleteClass(req, res) {
                 baseJson.baseJson({code: 99, message: "Tài khoản không có quyền"})
             );
     }
-    if (req.query.id == null) {
+    if (req.body.id == null) {
         return res
             .status(status.success)
             .json(
@@ -162,7 +170,7 @@ async function deleteClass(req, res) {
     }
 
     return Class
-        .deleteOne({id: req.query.id})
+        .deleteOne({id: req.body.id})
         .then(() => {
             return res.status(status.success).json(baseJson.baseJson({code: 0}));
         })

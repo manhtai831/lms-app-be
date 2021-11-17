@@ -82,8 +82,13 @@ async function getAllDepartment(req, res) {
     }
     const index = req.query.pageIndex || 1;
     const size = req.query.pageSize || 50;
+    var filter;
+    if (req.query.name) {
+        filter=   { "name": { "$regex": req.query.name, "$options": "i" } }
+        // filter = {title :req.query.title}
+    }
     await departmentModel
-        .find()
+        .find(filter)
         .exec(async (err, allDepartment) => {
                 var data = allDepartment;
                 for (var i = 0; i < data.length; i++) {

@@ -10,7 +10,7 @@ const subjectRouter = express.Router();
 
 subjectRouter.post("/create_subject", auth, createSubject);
 subjectRouter.get("/get_subjects", auth, getAllSubjects);
-subjectRouter.get("/subjects", auth, deleteSubject);
-subjectRouter.post("/subjects", auth, updateSubject);
+subjectRouter.post("/delete_subjects", auth, deleteSubject);
+subjectRouter.post("/update_subjects", auth, updateSubject);
 
 module.exports = subjectRouter;

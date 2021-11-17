@@ -1,4 +1,5 @@
 const Subject = require("../../model/subject_model");
+const userModel = require("../../model/user_model");
 const status = require("../../utils/status");
 const baseJson = require("../../utils/base_json");
 const {
@@ -14,6 +15,7 @@ const {
 } = require("../../utils/role_json");
 const {baseJsonPage} = require("../../utils/base_json");
 const departmentModel = require("../../model/department_model");
+const {uploadImage} = require("../../utils/image");
 
 const createSubject = async (req, res, next) => {
 	//check role
@@ -29,13 +31,16 @@ const createSubject = async (req, res, next) => {
 			);
 	}
 
+	var user = await userModel.findOne({id:req.user.id}).select("name");
+
 	//set data
 	const subjectModel = new Subject({
 		name: req.body.name,
 		description: req.body.description,
 		idDepartment: req.body.idDepartment,
+		status: req.body.status,
 		createdAt: getNowFormatted(),
-		createdBy: req.user.id,
+		createdBy: user,
 	});
 
 	//add data
@@ -73,16 +78,18 @@ const getAllSubjects = async (req, res, next) => {
 
 	//find all subjects
 	Subject.find(filter)
-		.then((data) => {
-			// var datatmp = data;
-			// for(var i =0; i< datatmp.length; i++){
-			// 	departmentModel
-			// 		.find()datatmp[i].
-			// }
+		.then(async (data) => {
+			var datatmp = data;
+			for(var i =0; i< datatmp.length; i++){
+				var d = await departmentModel
+					.findOne({id:datatmp[i].idDepartment})
+				datatmp[i].department = d;
+			}
+
 			return res.status(status.success).json(
 				baseJson.baseJson({
 					code: 0,
-					data:baseJsonPage(0,0,data.length,data)
+					data:baseJsonPage(0,0,datatmp.length,datatmp)
 				})
 			);
 		})
@@ -106,13 +113,11 @@ const deleteSubject = async (req, res, next) => {
 	}
 
 	//delete subject by id
-	Subject.deleteOne({ id: req.query.id })
+	Subject.deleteOne({ id: req.body.id })
 		.then(() => {
 			return res.status(status.success).json(
 				baseJson.baseJson({
 					code: 0,
-					message: "delete subject finish!",
-					data: req.query.id,
 				})
 			);
 		})
@@ -135,15 +140,17 @@ const updateSubject = async (req, res) => {
 				baseJson.baseJson({ code: 99, message: "Tài khoản không có quyền" })
 			);
 	}
-
+	var user = await userModel.findOne({id:req.user.id});
 	//update subject
 	Subject.updateOne(
-		{ id: req.query.id },
+		{ id: req.body.id },
 		{
 			$set: {
 				name: req.body.name,
 				description: req.body.description,
-				updatedBy: req.user.id,
+				status: req.body.status,
+				idDepartment: req.body.idDepartment,
+				updatedBy:user,
 				updatedAt: getNowFormatted(),
 			},
 		}

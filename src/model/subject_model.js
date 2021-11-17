@@ -13,11 +13,14 @@ const subjectModel = new mongoose.Schema({
 		required: true,
 	},
 	idDepartment:Number,
+	status:Number,
+	data:String,
+	department:Object,
 	description: String,
-	createdAt: Date,
-	createdBy: Number,
-	updatedAt: Date,
-	updatedBy: Number,
+	createdAt: String,
+	createdBy: Object,
+	updatedAt: String,
+	updatedBy: Object,
 });
 
 autoIncrement.initialize(mongoose.connection);

@@ -15,6 +15,7 @@ const documentRoutes = require("./src/api/document/route");
 const assigmentRoutes = require("./src/api/assignment/route");
 const labRoutes = require("./src/api/lab/route");
 const answerRoutes = require("./src/api/answer/route");
+const rolesRoutes = require("./src/api/group_role/route");
 const questionRouter = require("./src/api/question/route");
 const fileAttachRouter = require("./src/api/file_attach/route");
 const danhMucRouter = require("./src/api/danh_muc_lon/danh_muc_lon_route");
@@ -31,7 +32,7 @@ var cors = require('cors');
 app.use(cors());
 
 
-app.set("port", process.env.PORT || 3000);
+app.set("port", process.env.PORT || 3001);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
@@ -76,7 +77,7 @@ app.use(
     questionRouter,
     fileAttachRouter,
     danhMucRouter,
-    quizRouter
+    quizRouter, rolesRoutes
 );
 
 app.listen(app.get("port"), function () {
