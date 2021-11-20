@@ -20,6 +20,10 @@ function convertDateTime(date) {
     return dateString.toISOString().replace("T", " ").substr(0, 19);
 }
 
+function getNowMilliseconds(){
+    return Number(Date.now());
+}
+
 async function verifyRole(res, {userId, roleId}) {
     var userRole = await userRoleModel.find({idUser: userId});
     for (var i = 0; i < userRole.length; i++) {
@@ -30,4 +34,4 @@ async function verifyRole(res, {userId, roleId}) {
     return false;
 }
 
-module.exports = {getNowFormatted, verifyRole, convertDateTime,getMoreTime};
+module.exports = {getNowFormatted, verifyRole, convertDateTime,getMoreTime,getNowMilliseconds};

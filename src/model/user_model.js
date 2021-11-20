@@ -15,7 +15,7 @@ const userModel = new mongoose.Schema({
 	password: String,
 	email: String,
 	data: String,
-	gender: Number,
+	gender: String,
 	address: String,
 	maSV: String,
 	status: Number,
@@ -24,9 +24,12 @@ const userModel = new mongoose.Schema({
 	token: String,
 	permission: [],
 	idGroup: Number,
+	nameGroup: String,
 	avatar: String,
-	chuyenNganh: String,
-	kiHoc : String
+	chuyenNganh: Object,
+	chuyenNganhId: Number,
+	kiHoc : Object,
+	kiHocId : Number,
 });
 
 autoIncrement.initialize(mongoose.connection);

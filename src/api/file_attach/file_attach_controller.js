@@ -3,7 +3,11 @@ const {create_document_type, create_file_attach, get_list_file_attach} = require
 const status = require("../../utils/status");
 const baseJson = require("../../utils/base_json");
 const FileAttachModel = require("../../model/file_attach_model");
+const UserModel = require("../../model/user_model");
+const ClassModel = require("../../model/class_model");
+const DocumentTypeModel = require("../../model/document_type_model");
 const {baseJsonPage} = require("../../utils/base_json");
+const {uploadImage} = require("../../utils/image");
 
 async function createFileAttach(req, res) {
     //check role
@@ -18,12 +22,33 @@ async function createFileAttach(req, res) {
                 baseJson.baseJson({code: 99, message: "Tài khoản không có quyền"})
             );
     }
+    if (req.body.idDocumentType == null) {
+        return res
+            .status(status.success)
+            .json(
+                baseJson.baseJson({code: 99, message: "\"idDocumentType\" is required"})
+            );
+    }
+    if (req.body.idClass == null) {
+        return res
+            .status(status.success)
+            .json(
+                baseJson.baseJson({code: 99, message: "\"idClass\" is required"})
+            );
+    }
+    var resp;
+    if (req.body.data) {
+        var a = await uploadImage(req.body.data);
+        if (a) {
+            resp = a.url;
+        }
+    }
     //set data
     const fileAttachModel = new FileAttachModel({
         name: req.body.name,
-        link: req.body.link,
+        link: resp,
         idUser: req.user.id,
-        idDocument: req.body.idDocument,
+        idClass: req.body.idClass,
         idDocumentType: req.body.idDocumentType,
         createdAt: getNowFormatted(),
         createdBy: req.user.id,
@@ -63,8 +88,15 @@ async function getListFileAttach(req, res) {
     }
 
     var filter;
-    if(req.query.idDocument){
-        filter = {idDocument  : req.query.idDocument}
+    if (req.query.idClass && req.query.idDocumentType) {
+        filter = {
+            idClass: req.query.idClass,
+            idDocumentType: req.query.idDocumentType,
+        }
+    } else if (req.query.idClass) {
+        filter = {idClass: req.query.idClass,}
+    } else if (req.query.idDocumentType) {
+        filter = {idDocumentType: req.query.idDocumentType,}
     }
 
     //add data
@@ -73,7 +105,7 @@ async function getListFileAttach(req, res) {
             return res.status(status.success).json(
                 baseJson.baseJson({
                     code: 0,
-                    data: baseJsonPage(0,0,data.length,data)
+                    data: baseJsonPage(0, 0, data.length, data)
                 })
             );
         })
@@ -87,56 +119,35 @@ async function getListFileAttach(req, res) {
         });
 }
 
-async function getListFileAttachByIdUser(req, res) {
+async function getDetailFileAttach(req, res) {
+    // //check role
+    // var hasRole = await verifyRole(res, {
+    //     roleId: get_list_file_attach.id,
+    //     userId: req.user.id,
+    // });
+    // if (hasRole === false) {
+    //     return res
+    //         .status(status.success)
+    //         .json(
+    //             baseJson.baseJson({code: 99, message: "Tài khoản không có quyền"})
+    //         );
+    // }
 
-    return FileAttachModel.find({idUser: req.user.id})
-        .then((data) => {
+
+    //add data
+    return FileAttachModel.findOne({id: req.query.id})
+        .then(async (data) => {
+            var d = data;
+            if(d){
+                d.user = await  UserModel.findOne({id:d.idUser}).select("id name");
+                d.class = await  ClassModel.findOne({id:d.idClass}).select("id name");
+                d.documentType = await  DocumentTypeModel.findOne({id:d.idDocumentType}).select("id name");
+            }
+
             return res.status(status.success).json(
                 baseJson.baseJson({
                     code: 0,
-                    data: data
-                })
-            );
-        })
-        .catch((error) => {
-            console.log(error);
-            return res.status(status.success).json(
-                baseJson.baseJson({
-                    code: 99
-                })
-            );
-        });
-}
-
-async function getListFileAttachByIdDocument(req, res) {
-
-    return FileAttachModel.find({idDocument: req.query.id})
-        .then((data) => {
-            return res.status(status.success).json(
-                baseJson.baseJson({
-                    code: 0,
-                    data: data
-                })
-            );
-        })
-        .catch((error) => {
-            console.log(error);
-            return res.status(status.success).json(
-                baseJson.baseJson({
-                    code: 99
-                })
-            );
-        });
-}
-
-async function getListFileAttachByIdTypeDocument(req, res) {
-
-    return FileAttachModel.find({idDocumentType: req.query.id})
-        .then((data) => {
-            return res.status(status.success).json(
-                baseJson.baseJson({
-                    code: 0,
-                    data: data
+                    data: d
                 })
             );
         })
@@ -151,20 +162,29 @@ async function getListFileAttachByIdTypeDocument(req, res) {
 }
 
 async function updateFileAttach(req, res) {
-    await  FileAttachModel.deleteOne({id: req.body.id});
-    //set data
-    const fileAttachModel = new FileAttachModel({
+    if(req.body.id == null){
+        return res.status(status.success).json(
+            baseJson.baseJson({
+                code: 99,message:"\"id\" is required"
+            })
+        );
+    }
+    var resp;
+    if (req.body.data) {
+        var a = await uploadImage(req.body.data);
+        if (a) {
+            resp = a.url;
+        }
+    }else resp = req.body.link;
+    const fileAttachModel = {
         name: req.body.name,
-        link: req.body.link,
-        idUser: req.user.id,
-        idDocument: req.body.idDocument,
-        idDocumentType: req.body.idDocumentType,
+        link:resp,
         createdAt: getNowFormatted(),
         createdBy: req.user.id,
-    });
+    };
 
     //add data
-    return fileAttachModel.save()
+    return FileAttachModel.updateOne({id:req.body.id},{$set:fileAttachModel})
         .then((data) => {
             return res.status(status.success).json(
                 baseJson.baseJson({
@@ -183,7 +203,14 @@ async function updateFileAttach(req, res) {
 }
 
 async function deleteFileAttach(req, res) {
-    return  FileAttachModel.deleteOne({id: req.query.id})
+    if(req.body.id == null){
+        return res.status(status.success).json(
+            baseJson.baseJson({
+                code: 99,message:"\"id\" is required"
+            })
+        );
+    }
+    return FileAttachModel.deleteOne({id: req.body.id})
         .then((data) => {
             return res.status(status.success).json(
                 baseJson.baseJson({
@@ -202,7 +229,9 @@ async function deleteFileAttach(req, res) {
 }
 
 module.exports = {
-    createFileAttach,getListFileAttach,getListFileAttachByIdUser,getListFileAttachByIdDocument,getListFileAttachByIdTypeDocument
-    ,updateFileAttach,deleteFileAttach
+    createFileAttach,
+    getListFileAttach,
+    updateFileAttach,
+    deleteFileAttach,getDetailFileAttach
 };
 

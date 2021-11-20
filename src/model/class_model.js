@@ -16,6 +16,8 @@ const classModel = new mongoose.Schema({
         immutable:true
     },
     idSubject: Number,
+    listGroupType:[],
+    listFileSystem:[],
     subject:Object,
     createAt: String,
     createBy: Object,

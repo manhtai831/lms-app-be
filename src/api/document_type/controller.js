@@ -1,6 +1,7 @@
 const DocumentType = require("../../model/document_type_model");
 const UserModel = require("../../model/user_model");
 const ClassModel = require("../../model/class_model");
+const GroupTypeModel = require("../../model/group_type");
 const SubjectModel = require("../../model/subject_model");
 const status = require("../../utils/status");
 const baseJson = require("../../utils/base_json");
@@ -31,13 +32,31 @@ const createDocumentType = async (req, res, next) => {
                 baseJson.baseJson({code: 99, message: "Tài khoản không có quyền"})
             );
     }
+    if (req.body.idGroupType == null) {
+        return res
+            .status(status.success)
+            .json(
+                baseJson.baseJson({code: 99, message: "\"idGroupType\" is required"})
+            );
+    }
+    if (req.body.startTime == null || req.body.endTime == null) {
+        return res
+            .status(status.success)
+            .json(
+                baseJson.baseJson({code: 99, message: "\"startTime and endTime\" is required"})
+            );
+    }
 
     var user = UserModel.findOne({id: req.user.id});
+
     //set data
     const DocumentTypeModel = new DocumentType({
         name: req.body.name,
         description: req.body.description,
+        startTime: req.body.startTime,
+        endTime: req.body.endTime,
         type: req.body.type,
+        idGroupType: req.body.idGroupType,
         createdAt: getNowFormatted(),
         createdBy: req.user.id,
     });
@@ -148,36 +167,75 @@ const getDocumentTypes = async (req, res, next) => {
             );
     }
     var filter;
-    if (req.query.idSubject && req.query.idClass) {
+    if (req.query.idGroupType) {
         filter = {
-            idSubject: req.query.idSubject,
-            idClass: req.query.idClass
-        }
-    } else if (req.query.idSubject) {
-        filter = {
-            idSubject: req.query.idSubject
-        }
-    } else if (req.query.idClass) {
-        filter = {
-            idClass: req.query.idClass
+            idGroupType: req.query.idGroupType,
         }
     }
-
     // find all document types
-    DocumentType.find(filter).sort({"name" : 1})
+    DocumentType.find(filter).sort({"name": 1})
         .then(async (data) => {
             var datatmp = data;
-            for (var i = 0; i < datatmp.length; i++) {
-                datatmp[i].class = await ClassModel.findOne({id: datatmp[i].idClass});
-                datatmp[i].subject = await SubjectModel.findOne({id: datatmp[i].idSubject});
-                console.log(await UserModel.findOne({id: datatmp[i].createdBy}));
-                datatmp[i].oCreatedBy = await UserModel.findOne({id: datatmp[i].createdBy}).select("id name");
-
-            }
+            // for (var i = 0; i < datatmp.length; i++) {
+            //     datatmp[i].class = await ClassModel.findOne({id: datatmp[i].idClass});
+            //     datatmp[i].subject = await SubjectModel.findOne({id: datatmp[i].idSubject});
+            //     console.log(await UserModel.findOne({id: datatmp[i].createdBy}));
+            //     datatmp[i].oCreatedBy = await UserModel.findOne({id: datatmp[i].createdBy}).select("id name");
+            //
+            // }
             return res.status(status.success).json(
                 baseJson.baseJson({
                     code: 0,
                     data: baseJsonPage(0, 0, datatmp.length, datatmp),
+                })
+            );
+        })
+        .catch((error) => {
+            next(error);
+            return res.status(400).json(baseJson.baseJson({
+                code: 99, data: error
+            }))
+        });
+};
+
+const getDetailDocumentType = async (req, res, next) => {
+    // //check role
+    // var hasRole = await verifyRole(res, {
+    //     roleId: get_document_type.id,
+    //     userId: req.user.id,
+    // });
+    // if (hasRole === false) {
+    //     return res
+    //         .status(status.success)
+    //         .json(
+    //             baseJson.baseJson({code: 99, message: "Tài khoản không có quyền"})
+    //         );
+    // }
+    var filter;
+    if (req.query.id) {
+        filter = {
+            id: req.query.id,
+        }
+    }
+    // find all document types
+    DocumentType.findOne(filter)
+        .then(async (data) => {
+            var d = data;
+
+            if (d) {
+
+                var grouptype = await GroupTypeModel.findOne({id: d.idGroupType});
+                if (grouptype) {
+                    d.groupType = grouptype;
+                    var cla = await ClassModel.findOne({id: grouptype.idClass});
+                    d.class = cla;
+                }
+            }
+
+            return res.status(status.success).json(
+                baseJson.baseJson({
+                    code: 0,
+                    data: d,
                 })
             );
         })
@@ -235,6 +293,20 @@ const UpdateDocumentType = async (req, res) => {
                 baseJson.baseJson({code: 99, message: "Tài khoản không có quyền"})
             );
     }
+    if (req.body.idGroupType === null) {
+        return res
+            .status(status.success)
+            .json(
+                baseJson.baseJson({code: 99, message: "\"idGroupType\" is required"})
+            );
+    }
+    if (req.body.id === null) {
+        return res
+            .status(status.success)
+            .json(
+                baseJson.baseJson({code: 99, message: "\"id\" is required"})
+            );
+    }
 
     //update subject
     DocumentType.updateOne(
@@ -243,6 +315,9 @@ const UpdateDocumentType = async (req, res) => {
             $set: {
                 name: req.body.name,
                 description: req.body.description,
+                endTime: req.body.endTime,
+                startTime: req.body.startTime,
+                idGroupType: req.body.idGroupType,
                 type: req.body.type,
                 updatedBy: req.user.id,
                 updatedAt: getNowFormatted(),
@@ -266,5 +341,5 @@ module.exports = {
     DeleteDocumentType,
     UpdateDocumentType,
     getDocumentTypeById,
-    getDocumentTypeByClassOrSubject
+    getDocumentTypeByClassOrSubject, getDetailDocumentType
 };

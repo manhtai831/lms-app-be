@@ -103,6 +103,43 @@ async function getAllClass(req, res) {
 
 
 }
+async function getDetailClass(req, res) {
+    // var hasRole = await verifyRole(res, {
+    //     roleId: get_all_class.id,
+    //     userId: req.user.id,
+    // });
+    // if (hasRole === false) {
+    //     return res
+    //         .status(status.success)
+    //         .json(
+    //             baseJson.baseJson({code: 99, message: "Tài khoản không có quyền"})
+    //         );
+    // }
+
+    var filter;
+    if (req.query.id) {
+        filter = {id: req.query.id};
+    }
+
+    await Class
+        .findOne(filter)
+        .exec(async (error, result) => {
+            // var datatmp = result;
+            // for (var i = 0; i < datatmp.length; i++) {
+            //     // result[i].createBy = await userModel.findOne({id: result[i].createBy.id}).select("id name userName email avatar");
+            //     datatmp[i].subject = await SubjectModel.findOne({id: datatmp[i].idSubject});
+            //     console.log(datatmp[i].subject)
+            // }
+            return res.status(status.success).json(
+                baseJson.baseJson({
+                    code: 0,
+                    data: result
+                })
+            );
+        });
+
+
+}
 
 async function updateClass(req, res) {
     var hasRole = await verifyRole(res, {
@@ -184,6 +221,6 @@ module.exports = {
     createClass,
     getAllClass,
     updateClass,
-    deleteClass
+    deleteClass,getDetailClass,
 
 };

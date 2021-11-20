@@ -15,12 +15,16 @@ const FileAttachModel = new mongoose.Schema({
 
     link:String,
     idUser:Number,
+    user:Object,
+    idClass:Number,
+    class:Object,
     idDocument:Number,
     idDocumentType:Number,
+    documentType:Object,
 
-    createdAt: Date,
+    createdAt: String,
     createdBy: Number,
-    updatedAt: Date,
+    updatedAt: String,
     updatedBy: Number,
 });
 

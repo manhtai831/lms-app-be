@@ -18,8 +18,10 @@ const answerRoutes = require("./src/api/answer/route");
 const rolesRoutes = require("./src/api/group_role/route");
 const questionRouter = require("./src/api/question/route");
 const fileAttachRouter = require("./src/api/file_attach/route");
+const fileSystemRouter = require("./src/api/file_system/file_system_route");
 const danhMucRouter = require("./src/api/danh_muc_lon/danh_muc_lon_route");
 const quizRouter = require("./src/api/quiz/quiz_route");
+const groupTypeRouter = require("./src/api/group_type/group_type_route");
 const status = require("./src/utils/status");
 const dotenv = require("dotenv");
 const express = require("express");
@@ -34,8 +36,9 @@ app.use(cors());
 
 app.set("port", process.env.PORT || 3001);
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json({limit: '25mb'}));
+// app.use(express.json({limit: '25mb'}));
+app.use(bodyParser.urlencoded({extended: false,limit: '25mb' }));
 app.use(logger("dev"));
 
 var db = process.env.URI_DB_DEV || process.env.URI_DB_PRODUCT;
@@ -77,10 +80,12 @@ app.use(
     questionRouter,
     fileAttachRouter,
     danhMucRouter,
-    quizRouter, rolesRoutes
+    quizRouter, rolesRoutes, groupTypeRouter,fileSystemRouter
 );
 
 app.listen(app.get("port"), function () {
+    console.log(Date.now());
     console.log("Listening on port " + app.get("port"));
     console.log(db);
+
 });
