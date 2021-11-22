@@ -3,6 +3,8 @@ const UserModel = require("../../model/user_model");
 const ClassModel = require("../../model/class_model");
 const GroupTypeModel = require("../../model/group_type");
 const SubjectModel = require("../../model/subject_model");
+const QuestionModel = require("../../model/question_model");
+const QuizDocModel = require("../../model/quiz_doc_model");
 const status = require("../../utils/status");
 const baseJson = require("../../utils/base_json");
 const {
@@ -49,12 +51,14 @@ const createDocumentType = async (req, res, next) => {
 
     var user = UserModel.findOne({id: req.user.id});
 
+
     //set data
     const DocumentTypeModel = new DocumentType({
         name: req.body.name,
         description: req.body.description,
         startTime: req.body.startTime,
         endTime: req.body.endTime,
+        listQuestion: req.body.listQuestion,
         type: req.body.type,
         idGroupType: req.body.idGroupType,
         createdAt: getNowFormatted(),
@@ -64,6 +68,18 @@ const createDocumentType = async (req, res, next) => {
     //add data
     return DocumentTypeModel.save()
         .then((data) => {
+            if (req.body.type === 'QUIZ') {
+                if (req.body.listQuestion) {
+                    req.body.listQuestion.forEach(async (element) => {
+                        var quizDoc = QuizDocModel({
+                            idDanhMuc: data.id,
+                            idCauHoi: element,
+                        });
+                        await quizDoc.save();
+                    })
+                }
+
+            }
             return res.status(status.success).json(
                 baseJson.baseJson({
                     code: 0,
@@ -309,29 +325,39 @@ const UpdateDocumentType = async (req, res) => {
     }
 
     //update subject
-    DocumentType.updateOne(
-        {id: req.body.id},
-        {
-            $set: {
-                name: req.body.name,
-                description: req.body.description,
-                endTime: req.body.endTime,
-                startTime: req.body.startTime,
-                idGroupType: req.body.idGroupType,
-                type: req.body.type,
-                updatedBy: req.user.id,
-                updatedAt: getNowFormatted(),
-            },
-        })
-        .then(() => {
-            return res.status(status.success).json(
-                baseJson.baseJson({
-                    code: 0,
+    return DocumentType.updateOne({id: req.body.id}, {
+        $set: {
+            name: req.body.name,
+            description: req.body.description,
+            endTime: req.body.endTime,
+            startTime: req.body.startTime,
+            idGroupType: req.body.idGroupType,
+            listQuestion: req.body.listQuestion,
+            type: req.body.type,
+            updatedBy: req.user.id,
+            updatedAt: getNowFormatted(),
+        }
+    }).then(async (result) => {
+        if (req.body.type === 'QUIZ') {
+            await QuizDocModel.deleteMany({idDanhMuc: req.body.id})
+            if (req.body.listQuestion) {
+                req.body.listQuestion.forEach(async (element) => {
+                    var quizDoc = QuizDocModel({
+                        idDanhMuc: req.body.id,
+                        idCauHoi: element,
+                    });
+                    await quizDoc.save();
                 })
-            );
-        })
-        .catch((error) => {
-            next(error);
+            }
+
+        }
+        return res.status(status.success).json(
+            baseJson.baseJson({
+                code: 0
+            })
+        );
+    }).catch((error) => {
+            console.log(error);
         });
 };
 

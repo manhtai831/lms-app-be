@@ -10,8 +10,8 @@ const DocumentTypeModel = new mongoose.Schema({
 	},
 	name: {
 		type: String,
-		required: true,
 	},
+	listQuestion:[],
 	description:String,
 	startTime:String,
 	endTime:String,

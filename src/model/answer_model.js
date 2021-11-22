@@ -10,9 +10,9 @@ const answerModel = new mongoose.Schema({
 	},
 	idCauHoi:Number,
 	content: String,
-	createdAt: Date,
+	createdAt: String,
 	createdBy: Number,
-	updatedAt: Date,
+	updatedAt: String,
 	updatedBy: Number,
 });
 

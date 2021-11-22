@@ -22,6 +22,7 @@ const fileSystemRouter = require("./src/api/file_system/file_system_route");
 const danhMucRouter = require("./src/api/danh_muc_lon/danh_muc_lon_route");
 const quizRouter = require("./src/api/quiz/quiz_route");
 const groupTypeRouter = require("./src/api/group_type/group_type_route");
+const quizDoc = require("./src/api/quiz_document/quiz_doc_route");
 const status = require("./src/utils/status");
 const dotenv = require("dotenv");
 const express = require("express");
@@ -80,7 +81,7 @@ app.use(
     questionRouter,
     fileAttachRouter,
     danhMucRouter,
-    quizRouter, rolesRoutes, groupTypeRouter,fileSystemRouter
+    quizRouter, rolesRoutes, groupTypeRouter,fileSystemRouter,quizDoc
 );
 
 app.listen(app.get("port"), function () {

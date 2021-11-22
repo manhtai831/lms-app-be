@@ -85,7 +85,7 @@ async function getAllClass(req, res) {
             var datatmp = result;
             for (var i = 0; i < datatmp.length; i++) {
                 // result[i].createBy = await userModel.findOne({id: result[i].createBy.id}).select("id name userName email avatar");
-                datatmp[i].subject = await SubjectModel.findOne({id: datatmp[i].idSubject});
+                datatmp[i].subject = await SubjectModel.findOne({id: datatmp[i].idSubject}).select("id name idDepartment");
                 console.log(datatmp[i].subject)
             }
             return res.status(status.success).json(
@@ -173,6 +173,7 @@ async function updateClass(req, res) {
                     updateAt: getNowFormatted(),
                     updateBy: user,
                     name: req.body.name,
+                    idSubject: req.body.idSubject,
                     description: req.body.description,
                 },
             }
