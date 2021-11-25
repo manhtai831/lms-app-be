@@ -33,7 +33,7 @@ dotenv.config();
 const app = express();
 var cors = require('cors');
 app.use(cors({
-    origin: 'https://lms-app-281.herokuapp.com'
+    origin: 'https://lms-app-281.herokuapp.com',
 }));
 
 
