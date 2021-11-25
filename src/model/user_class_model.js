@@ -10,10 +10,12 @@ const userClassModel = new mongoose.Schema({
         type: Number,
         required: true,
     },
+    // class: Object,
     idUser: {
         type: Number,
         required: true,
     },
+    user:Object
 });
 
 autoIncrement.initialize(mongoose.connection);

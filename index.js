@@ -35,7 +35,7 @@ var cors = require('cors');
 app.use(cors());
 
 
-app.set("port", process.env.PORT || 3001);
+app.set("port", process.env.PORT || 3000);
 
 app.use(bodyParser.json({limit: '25mb'}));
 // app.use(express.json({limit: '25mb'}));
@@ -83,7 +83,10 @@ app.use(
     danhMucRouter,
     quizRouter, rolesRoutes, groupTypeRouter,fileSystemRouter,quizDoc
 );
-
+app.use(function(req, res, next) {
+    res.setHeader('Access-Control-Allow-Origin',  '*');
+    next();
+});
 app.listen(app.get("port"), function () {
     console.log(Date.now());
     console.log("Listening on port " + app.get("port"));

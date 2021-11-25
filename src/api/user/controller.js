@@ -212,7 +212,7 @@ async function getListUser(req, res) {
         }
         return res
             .status(200)
-            .json(baseJson({code: 99, message: "Tài khoản chưa được đăng ký"}));
+            .json(baseJson({code: 99}));
     } catch (error) {
         return res.status(500).json(baseJson({code: 99, data: error}));
     }
