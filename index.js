@@ -32,7 +32,9 @@ dotenv.config();
 
 const app = express();
 var cors = require('cors');
-app.use(cors());
+app.use(cors({
+    origin: 'https://lms-app-281.herokuapp.com'
+}));
 
 
 app.set("port", process.env.PORT || 3000);
