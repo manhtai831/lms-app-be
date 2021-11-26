@@ -163,10 +163,17 @@ async function getUserInfo(req, res) {
 
                         user.kiHoc = kh;
                         var roles = [];
+                        var roleTmp = await RoleModel
+                            .find()
+                            .select("id name")
                         for (var i = 0; i < group.roles.length; i++) {
-                            var role = await RoleModel
-                                .findOne({id: group.roles[i]})
-                                .select("idRole name");
+                            var role ;
+                            for (var j = 0; j < roleTmp.length; j++) {
+                                if(group.roles[i] === roleTmp[j].id){
+                                    role = roleTmp[j];
+                                    break;
+                                }
+                            }
                             if (role) {
                                 // console.log(role);
                                 roles.push(role);
