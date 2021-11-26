@@ -26,18 +26,25 @@ const quizDoc = require("./src/api/quiz_document/quiz_doc_route");
 const status = require("./src/utils/status");
 const dotenv = require("dotenv");
 const express = require("express");
-
+const cors = require('cors');
+const fetch = require("node-fetch");
+const redis = require("redis");
+const cachegoose = require('cachegoose');
 // get config vars
 dotenv.config();
 
 const app = express();
-var cors = require('cors');
-app.use(cors({
-    origin: 'https://lms-app-281.herokuapp.com',
-}));
+app.use(cors());
 
 
 app.set("port", process.env.PORT || 3000);
+
+
+cachegoose(mongoose, {
+    port: 6379,         /* the query results will be cached in memory. */
+    host: 'localhost'
+});
+
 
 app.use(bodyParser.json({limit: '25mb'}));
 // app.use(express.json({limit: '25mb'}));
@@ -89,9 +96,10 @@ app.use(function(req, res, next) {
     res.setHeader('Access-Control-Allow-Origin',  '*');
     next();
 });
+
 app.listen(app.get("port"), function () {
     console.log(Date.now());
     console.log("Listening on port " + app.get("port"));
     console.log(db);
-
 });
+

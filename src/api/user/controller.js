@@ -12,7 +12,7 @@ const bcrypt = require("bcrypt");
 const {baseJson, baseJsonPage} = require("../../utils/base_json");
 const UserRoleModel = require("../../model/user_role_model");
 const GroupRoleModel = require("../../model/group_role");
-const fs = require('fs')
+const mongoose = require("mongoose");
 
 async function register(req, res) {
     let encryptedPassword;
@@ -113,8 +113,8 @@ async function login(req, res) {
             user.token = token;
             if (user.idGroup) {
                 var group = await GroupRoleModel.findOne({id: user.idGroup});
-                var cn = await DepartmentModel.findOne({id: user.chuyenNganhId});
-                var kh = await SemesterModel.findOne({id: user.kiHocId});
+                var cn = await DepartmentModel.findOne({id: user.chuyenNganhId}).select(" id name");
+                var kh = await SemesterModel.findOne({id: user.kiHocId}).select(" id name");
                 if (group)
                     user.nameGroup = group.name;
 
@@ -123,13 +123,13 @@ async function login(req, res) {
                     user.kiHoc = kh;
                 // console.log(group)
                 var roles = [];
-                for (var i = 0; i < group.roles.length; i++) {
-                    var role = await RoleModel
-                        .findOne({id: group.roles[i]})
-                        .select("idRole name");
-                    if (role)
-                        roles.push(role);
-                }
+                // for (var i = 0; i < group.roles.length; i++) {
+                //     var role = await RoleModel
+                //         .findOne({id: group.roles[i]})
+                //         .select("idRole name");
+                //     if (role)
+                //         roles.push(role);
+                // }
                 user.permission = roles;
             }
 
@@ -147,41 +147,44 @@ async function login(req, res) {
 
 async function getUserInfo(req, res) {
     try {
-        // console.log(req.user);
-        var user = await userModel
-            .findOne({id: req.user.id})
-            .select("id permission name userName email token birth phoneNumber avatar chuyenNganh kiHoc idGroup");
-        if (user) {
-            if (user.idGroup) {
-                var group = await GroupRoleModel.findOne({id: user.idGroup});
-                var cn = await DepartmentModel.findOne({id: user.chuyenNganhId});
-                var kh = await SemesterModel.findOne({id: user.kiHocId});
-                if (group)
-                    user.nameGroup = group.name;
 
-                    user.chuyenNganh = cn;
+                var user = await userModel
+                    .findOne({id: req.user.id})
+                    .select("id permission name userName email token birth phoneNumber avatar chuyenNganh kiHoc idGroup");
+                if (user) {
+                    if (user.idGroup) {
+                        var group = await GroupRoleModel.findOne({id: user.idGroup});
+                        var cn = await DepartmentModel.findOne({id: user.chuyenNganhId});
+                        var kh = await SemesterModel.findOne({id: user.kiHocId});
+                        if (group)
+                            user.nameGroup = group.name;
 
-                    user.kiHoc = kh;
-                var roles = [];
-                for (var i = 0; i < group.roles.length; i++) {
-                    var role = await RoleModel
-                        .findOne({id: group.roles[i]})
-                        .select("idRole name");
-                    if (role) {
-                        // console.log(role);
-                        roles.push(role);
+                        user.chuyenNganh = cn;
 
+                        user.kiHoc = kh;
+                        var roles = [];
+                        for (var i = 0; i < group.roles.length; i++) {
+                            var role = await RoleModel
+                                .findOne({id: group.roles[i]})
+                                .select("idRole name");
+                            if (role) {
+                                // console.log(role);
+                                roles.push(role);
+
+                            }
+
+                        }
+                        user.permission = roles;
                     }
-
+                    // Save the  API response in Redis store,  data expire time in 3600 seconds, it means one hour
+                   // await client.set('userphotos',  JSON.stringify(user));
+                    return res.status(200).json(baseJson({code: 0, data: user}));
                 }
-                user.permission = roles;
-            }
+                return res
+                    .status(200)
+                    .json(baseJson({code: 99, message: "Tài khoản chưa được đăng ký"}));
 
-            return res.status(200).json(baseJson({code: 0, data: user}));
-        }
-        return res
-            .status(200)
-            .json(baseJson({code: 99, message: "Tài khoản chưa được đăng ký"}));
+
     } catch (error) {
         return res.status(500).json(baseJson({code: 99, data: error}));
     }
@@ -189,6 +192,7 @@ async function getUserInfo(req, res) {
 
 async function getListUser(req, res) {
     try {
+
         // console.log(req.user);
         var filter;
         if (req.query.name) {
@@ -198,8 +202,8 @@ async function getListUser(req, res) {
             .find(filter).select("maSV id name userName password email birth phoneNumber avatar chuyenNganh kiHoc address status gender nameGroup idGroup chuyenNganhId  kiHocId");
         for (var i = 0; i < users.length; i++) {
             var group = await GroupRoleModel.findOne({id: users[i].idGroup});
-            var cn = await DepartmentModel.findOne({id: users[i].chuyenNganhId});
-            var kh = await SemesterModel.findOne({id: users[i].kiHocId});
+            var cn = await DepartmentModel.findOne({id: users[i].chuyenNganhId}).select("id name");
+            var kh = await SemesterModel.findOne({id: users[i].kiHocId}).select("id name");
             if (group)
                 users[i].nameGroup = group.name;
 
