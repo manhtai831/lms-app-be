@@ -218,16 +218,36 @@ async function getListUser(req, res) {
         }
         var users = await userModel
             .find(filter).select("maSV id name userName password email birth phoneNumber avatar chuyenNganh kiHoc address status gender nameGroup idGroup chuyenNganhId  kiHocId");
+        var group = await GroupRoleModel.find();
+        var cn = await DepartmentModel.find().select("id name");
+        var kh = await SemesterModel.find().select("id name");
+
         for (var i = 0; i < users.length; i++) {
-            var group = await GroupRoleModel.findOne({id: users[i].idGroup});
-            var cn = await DepartmentModel.findOne({id: users[i].chuyenNganhId}).select("id name");
-            var kh = await SemesterModel.findOne({id: users[i].kiHocId}).select("id name");
-            if (group)
-                users[i].nameGroup = group.name;
+            var g;
+            var c;
+            var k;
+            group.forEach((element)=>{
+                if(element.id === users[i].idGroup){
+                    g = element;
+                }
+            })
+            cn.forEach((element)=>{
+                if(element.id === users[i].chuyenNganhId){
+                    c = element;
+                }
+            })
+            kh.forEach((element)=>{
+                if(element.id === users[i].kiHocId){
+                    k = element;
+                }
+            })
 
-                users[i].chuyenNganh = cn;
+            if (g)
+                users[i].nameGroup = g.name;
 
-                users[i].kiHoc = kh;
+                users[i].chuyenNganh = c;
+
+                users[i].kiHoc = k;
         }
         if (users) {
             return res.status(200).json(baseJson({code: 0, data: baseJsonPage(0, 0, users.length, users)}));
