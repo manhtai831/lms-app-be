@@ -5,6 +5,7 @@ const baseJson = require("../../utils/base_json");
 const UserClassModel = require("../../model/user_class_model");
 const Class = require("../../model/class_model");
 const userModel = require("../../model/user_model");
+const SubjectModel = require("../../model/subject_model");
 const {baseJsonPage} = require("../../utils/base_json");
 
 
@@ -79,6 +80,47 @@ async function getRegisteredClass(req, res) {
     return res.status(status.success).json(baseJson.baseJson({
         code: 0,
         data: baseJsonPage(0, 0, listClassRegister.length, listClassRegister)
+    }));
+    
+    
+}
+
+async function getSubjectRegisteredClass(req, res) {
+    var hasRole = await verifyRole(res, {
+        roleId: register_class.id,
+        userId: req.user.id,
+    });
+    if(hasRole === false) {
+        return res
+        .status(status.success)
+        .json(
+            baseJson.baseJson({code: 99, message: "Tài khoản không có quyền"})
+        );
+    }
+    
+    var availableClass = await UserClassModel.find({idUser: req.user.id});
+    var listClass = await Class.find();
+    var subjectList = await SubjectModel.find();
+    var listClassRegister = [];
+    for(var i = 0; i < availableClass.length; i++) {
+        for(var j = 0; j < listClass.length; j++) {
+            if(availableClass[i].idClass === listClass[j].id) {
+                listClassRegister.push(listClass[j]);
+            }
+        }
+    }
+    
+    var listSubjectRegister = [];
+    for(var i =0; i< listClassRegister.length;i++){
+        for(var j = 0; j< subjectList.length;j++){
+            if(listClassRegister[i].idSubject === subjectList[j].id){
+                listSubjectRegister.push(subjectList[j]);
+            }
+        }
+    }
+    return res.status(status.success).json(baseJson.baseJson({
+        code: 0,
+        data: baseJsonPage(0, 0, listSubjectRegister.length, listSubjectRegister)
     }));
     
     
@@ -163,6 +205,6 @@ async function checkRegisterClass(req, res) {
 
 module.exports = {
     registerClass,
-    getRegisteredClass, getUserOfClass,checkRegisterClass,
+    getRegisteredClass, getUserOfClass,checkRegisterClass,getSubjectRegisteredClass,
     cancelRegisteredClass
 };
