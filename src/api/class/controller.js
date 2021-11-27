@@ -103,6 +103,7 @@ async function getAllClass(req, res) {
 
 
 }
+
 async function getDetailClass(req, res) {
     // var hasRole = await verifyRole(res, {
     //     roleId: get_all_class.id,
