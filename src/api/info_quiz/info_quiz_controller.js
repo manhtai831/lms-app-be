@@ -1,5 +1,6 @@
 const Lab = require("../../model/lab_model");
 const InfoQuizModel = require("../../model/quiz_info_model");
+const DocumentTypeModel = require("../../model/document_type_model");
 const status = require("../../utils/status");
 const baseJson = require("../../utils/base_json");
 const {
@@ -43,6 +44,7 @@ const updateInfoQuiz = async(req, res, next) => {
         return res.status(status.success).json(
             baseJson.baseJson({
                 code: 0,
+                data: data
             })
         );
     })
@@ -60,27 +62,41 @@ const updateInfoQuiz = async(req, res, next) => {
 const getInfoQuiz = async(req, res, next) => {
     
     return InfoQuizModel.findOne({idUser: req.user.id, idDocumentType: req.query.idDocumentType,})
-    .then((data) => {
-        
-        if(data == null) {
+    .then(async(data) => {
+        let documentType = await DocumentTypeModel.findOne({id: req.query.idDocumentType});
+        if(data === null) {
+            //trường hợp endTime nhỏ hơn thời gian hiện tại
+            if(afterNow(documentType.endTime)) {
+                return res.status(status.success).json(
+                    baseJson.baseJson({
+                        code: 3, message: "Đã hết thời gian làm bài",
+                    })
+                );
+            }
+            //trường hợp endTime lơn hơn thời gian hiện tại
             return res.status(status.success).json(
                 baseJson.baseJson({
                     code: 0, message: "Chưa bắt đầu làm bài",
                 })
             );
-        }
-        if(afterNow(data.endTime)) {
+            
+        } else {
+            //trường hợp đã ấn nút bắt đầu hêt thời gian làm bài
+            if(afterNow(data.endTime)) {
+                return res.status(status.success).json(
+                    baseJson.baseJson({
+                        code: 1, message: "Đã hết giờ làm bài",
+                    })
+                );
+            }            //trường hợp đã ấn nút bắt đầu còn thời gian làm bài
+            
             return res.status(status.success).json(
                 baseJson.baseJson({
-                    code: 1, message: "Đã hết giờ làm bài",
+                    code: 2, message: "Đang làm bài", data: data
                 })
             );
         }
-        return res.status(status.success).json(
-            baseJson.baseJson({
-                code: 2, message: "Đang làm bài", data: data
-            })
-        );
+        
     })
     .catch((error) => {
         return res.status(status.success).json(
