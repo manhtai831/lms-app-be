@@ -31,30 +31,36 @@ async function getQuestionByDanhMuc(req, res) {
     //             baseJson.baseJson({code: 99, message: "Tài khoản không có quyền"})
     //         );
     // }
-
-
-    return QuizDocModel.find({idDanhMuc: req.query.idDanhMuc}).then(async (data) => {
+    
+    
+    return QuizDocModel.find({idDanhMuc: req.query.idDanhMuc}).then(async(data) => {
         var mData = data;
-        var listQuestion = [];
-        for(var i = 0; i< mData.length; i++){
-            var question = await QuestionModel.findOne({id: mData[i].idCauHoi});
-            var lCauTraLoi = [];
-            for (var j = 0; j < question.listCauTraLoi.length; j++) {
-                var lC = await AnswerModel.findOne({id: question.listCauTraLoi[j]}).select("idCauHoi content id");
-                if (lC)
-                    lCauTraLoi.push(lC);
-
-            }  question.listCauTraLoiObject = lCauTraLoi;
-            listQuestion.push(question);
+        var lC = await AnswerModel.find().select("idCauHoi content id");
+        var listQuestion = await  QuestionModel.find();
+ 
+        for(let i = 0; i < mData.length; i++) {
+            var listCauTraLoi = [];
+            for(let j = 0; j< listQuestion.length;j++){
+                if(mData[i].idCauHoi === listQuestion[j].id){
+                    for(var k=0; k< listQuestion[j].listCauTraLoi.length; k++){
+                        for(let l =0; l< lC.length; l++){
+                            if(listQuestion[j].listCauTraLoi[k] === lC[l].id){
+                                listCauTraLoi.push(lC[j]);
+                            }
+                        }
+                    }
+                    
+                }   listQuestion[j].listCauTraLoiObject = listCauTraLoi;
+            }
+         
         }
-
         return res.status(status.success).json(baseJson.baseJson({
             code: 0,
             data: baseJsonPage(0, 0, listQuestion.length, listQuestion)
         }));
     });
-
-
+    
+    
 }
 
 async function addAClassToASubject(req, res) {
@@ -67,53 +73,53 @@ async function addAClassToASubject(req, res) {
         roleId: add_a_class_to_a_subject.id,
         userId: req.user.id,
     });
-    if (hasRole === false || hasRoleClass === false) {
+    if(hasRole === false || hasRoleClass === false) {
         return res
-            .status(status.success)
-            .json(
-                baseJson.baseJson({code: 99, message: "Tài khoản không có quyền"})
-            );
+        .status(status.success)
+        .json(
+            baseJson.baseJson({code: 99, message: "Tài khoản không có quyền"})
+        );
     }
-
+    
     const user = await userModel
-        .findOne({id: req.user.id})
-        .select("id name userName email");
-
+    .findOne({id: req.user.id})
+    .select("id name userName email");
+    
     const classModel = new Class({
         name: req.body.name,
         description: req.body.description,
         createAt: getNowFormatted(),
         createBy: user,
     });
-
+    
     const mSubject = await SubjectModel.findOne({id: req.body.idSubject});
-
-    if (mSubject) {
+    
+    if(mSubject) {
         return classModel
-            .save()
-            .then(async (result) => {
-                const subjectClassModel = new SubjectClassModel({
-                    idClass: result.id,
-                    idSubject: req.body.idSubject,
-                });
-                await subjectClassModel.save();
-                return res.status(status.success).json(baseJson.baseJson({
-                    code: 0,
-                    message: 'Thêm lớp học thành công'
-                }));
-            })
-            .catch((error) => {
-                console.log(error);
-                return res.status(status.server_error).json(baseJson.baseJson({
-                    code: 99,
-                    message: 'Tạo mới lớp không thành công'
-                }));
+        .save()
+        .then(async(result) => {
+            const subjectClassModel = new SubjectClassModel({
+                idClass: result.id,
+                idSubject: req.body.idSubject,
             });
+            await subjectClassModel.save();
+            return res.status(status.success).json(baseJson.baseJson({
+                code: 0,
+                message: 'Thêm lớp học thành công'
+            }));
+        })
+        .catch((error) => {
+            console.log(error);
+            return res.status(status.server_error).json(baseJson.baseJson({
+                code: 99,
+                message: 'Tạo mới lớp không thành công'
+            }));
+        });
     } else {
         return res.status(status.server_error).json(baseJson.baseJson({code: 99, message: 'Môn học không tồn tại'}));
-
+        
     }
-
+    
 }
 
 async function deleteAClassInASubject(req, res) {
@@ -121,40 +127,40 @@ async function deleteAClassInASubject(req, res) {
         roleId: delete_a_class_in_a_subject.id,
         userId: req.user.id,
     });
-    if (hasRole === false) {
+    if(hasRole === false) {
         return res
-            .status(status.success)
-            .json(
-                baseJson.baseJson({code: 99, message: "Tài khoản không có quyền"})
-            );
+        .status(status.success)
+        .json(
+            baseJson.baseJson({code: 99, message: "Tài khoản không có quyền"})
+        );
     }
-
+    
     const mSubject = await SubjectModel.findOne({id: req.query.idSubject});
     const mClass = await Class.findOne({id: req.query.idClass});
-
-    if (mSubject && mClass) {
+    
+    if(mSubject && mClass) {
         return SubjectClassModel.findOneAndRemove({idSubject: mSubject.id, idClass: mClass.id})
-            .then(async (result) => {
-                return res.status(status.success).json(baseJson.baseJson({
-                    code: 0,
-                    message: 'Xóa thành công'
-                }));
-            })
-            .catch((error) => {
-                console.log(error);
-                return res.status(status.server_error).json(baseJson.baseJson({
-                    code: 99,
-                    message: 'Xóa không thành công'
-                }));
-            });
+        .then(async(result) => {
+            return res.status(status.success).json(baseJson.baseJson({
+                code: 0,
+                message: 'Xóa thành công'
+            }));
+        })
+        .catch((error) => {
+            console.log(error);
+            return res.status(status.server_error).json(baseJson.baseJson({
+                code: 99,
+                message: 'Xóa không thành công'
+            }));
+        });
     } else {
         return res.status(status.server_error).json(baseJson.baseJson({
             code: 99,
             message: 'Môn học hoặc lớp học không tồn tại'
         }));
-
+        
     }
-
+    
 }
 
 async function getClassOfSubject(req, res) {
@@ -162,23 +168,23 @@ async function getClassOfSubject(req, res) {
         roleId: add_class_of_subject.id,
         userId: req.user.id,
     });
-    if (hasRole === false) {
+    if(hasRole === false) {
         return res
-            .status(status.success)
-            .json(
-                baseJson.baseJson({code: 99, message: "Tài khoản không có quyền"})
-            );
+        .status(status.success)
+        .json(
+            baseJson.baseJson({code: 99, message: "Tài khoản không có quyền"})
+        );
     }
-
+    
     console.log(req.query.idSubject);
     var mSubjectClass = await SubjectClassModel.find({idSubject: req.query.idSubject});
-    if (mSubjectClass) {
+    if(mSubjectClass) {
         var listClass = [];
-        for (var i = 0; i < mSubjectClass.length; i++) {
+        for(var i = 0; i < mSubjectClass.length; i++) {
             const mClass = await Class.findOne({id: mSubjectClass[i].idClass});
             listClass.push(mClass);
         }
-
+        
         console.log(listClass);
         return res.status(status.success).json(baseJson.baseJson({code: 0, data: listClass}));
     } else {
