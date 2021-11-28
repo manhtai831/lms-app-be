@@ -3,7 +3,15 @@ const baseJson = require("./base_json");
 const moment = require('moment');
 
 function getNowFormatted() {
-    return moment().format('yyyy/MM/DD hh:mm:ss');
+    return moment().format('yyyy/MM/DD HH:mm:ss');
+}
+
+function getMoreFormatted(more) {
+    return  moment().subtract(-more,"minutes").format('yyyy/MM/DD HH:mm:ss');
+}
+
+function afterNow(date1) {
+    return !moment(date1,'yyyy/MM/DD HH:mm:ss').isAfter(moment());
 }
 
 function getMoreTime(more) {
@@ -34,4 +42,4 @@ async function verifyRole(res, {userId, roleId}) {
     return false;
 }
 
-module.exports = {getNowFormatted, verifyRole, convertDateTime,getMoreTime,getNowMilliseconds};
+module.exports = {getNowFormatted, verifyRole, convertDateTime,getMoreTime,getNowMilliseconds,getMoreFormatted,afterNow};

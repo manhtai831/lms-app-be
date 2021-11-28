@@ -24,6 +24,7 @@ const quizRouter = require("./src/api/quiz/quiz_route");
 const groupTypeRouter = require("./src/api/group_type/group_type_route");
 const quizDoc = require("./src/api/quiz_document/quiz_doc_route");
 const repoDepartRoute = require("./src/api/repo_department/repo_department_route");
+const infoQuizRoute = require("./src/api/info_quiz/info_quiz_route");
 const status = require("./src/utils/status");
 const dotenv = require("dotenv");
 const express = require("express");
@@ -31,6 +32,7 @@ const cors = require('cors');
 const fetch = require("node-fetch");
 const redis = require("redis");
 const cachegoose = require('cachegoose');
+const {getMoreFormatted,afterNow} = require("./src/utils/utils");
 // get config vars
 dotenv.config();
 
@@ -91,7 +93,7 @@ app.use(
     questionRouter,
     fileAttachRouter,
     danhMucRouter,repoDepartRoute,
-    quizRouter, rolesRoutes, groupTypeRouter,fileSystemRouter,quizDoc
+    quizRouter, rolesRoutes, groupTypeRouter,fileSystemRouter,quizDoc,infoQuizRoute
 );
 app.use(function(req, res, next) {
     res.setHeader('Access-Control-Allow-Origin',  '*');
@@ -99,8 +101,10 @@ app.use(function(req, res, next) {
 });
 
 app.listen(app.get("port"), function () {
-    console.log(Date.now());
+    // console.log(Date.now());
     console.log("Listening on port " + app.get("port"));
     console.log(db);
+    // console.log(getMoreFormatted(15));
+    console.log(afterNow("2021/11/28 17:45:49"));
 });
 
