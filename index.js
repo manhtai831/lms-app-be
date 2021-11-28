@@ -32,7 +32,7 @@ const cors = require('cors');
 const fetch = require("node-fetch");
 const redis = require("redis");
 const cachegoose = require('cachegoose');
-const {getMoreFormatted,afterNow} = require("./src/utils/utils");
+const {getMoreFormatted, afterNow, getNowFormatted} = require("./src/utils/utils");
 // get config vars
 dotenv.config();
 
@@ -51,25 +51,23 @@ cachegoose(mongoose, {
 
 app.use(bodyParser.json({limit: '25mb'}));
 // app.use(express.json({limit: '25mb'}));
-app.use(bodyParser.urlencoded({extended: false,limit: '25mb' }));
+app.use(bodyParser.urlencoded({extended: false, limit: '25mb'}));
 app.use(logger("dev"));
 
 var db = process.env.URI_DB_DEV || process.env.URI_DB_PRODUCT;
 mongoose
-    .connect(db, {useNewUrlParser: true, useUnifiedTopology: true})
-    .then(() => {
-        console.log("Database connected");
-    })
-    .catch((error) => {
-        console.log(error);
-        console.log("Error connecting to database");
-    });
+.connect(db, {useNewUrlParser: true, useUnifiedTopology: true})
+.then(() => {
+    console.log("Database connected");
+})
+.catch((error) => {
+    console.log(error);
+    console.log("Error connecting to database");
+});
 
-app.get("/", function (req, res) {
-    if (!res.headersSent) {
-        res.status(status.success).json({
-            message: "TECH NFD API RESTFUL",
-        });
+app.get("/", function(req, res) {
+    if(!res.headersSent) {
+        res.send("Thời gian hiện tại : " + getNowFormatted());
     }
     res.end();
 });
@@ -92,16 +90,16 @@ app.use(
     answerRoutes,
     questionRouter,
     fileAttachRouter,
-    danhMucRouter,repoDepartRoute,
-    quizRouter, rolesRoutes, groupTypeRouter,fileSystemRouter,quizDoc,infoQuizRoute
+    danhMucRouter, repoDepartRoute,
+    quizRouter, rolesRoutes, groupTypeRouter, fileSystemRouter, quizDoc, infoQuizRoute
 );
 app.use(function(req, res, next) {
-    res.setHeader('Access-Control-Allow-Origin',  '*');
+    res.setHeader('Access-Control-Allow-Origin', '*');
     next();
 });
 
-app.listen(app.get("port"), function () {
-    // console.log(Date.now());
+app.listen(app.get("port"), function() {
+    console.log(Date.now());
     console.log("Listening on port " + app.get("port"));
     console.log(db);
     // console.log(getMoreFormatted(15));
