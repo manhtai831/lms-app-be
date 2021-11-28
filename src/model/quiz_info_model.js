@@ -11,7 +11,8 @@ const QuizInfoModel = new mongoose.Schema({
     idDocumentType:Number,
     idUser:Number,
     startTime:String,
-    endTime:String
+    endTime:String,
+    point:Number
 });
 
 autoIncrement.initialize(mongoose.connection);

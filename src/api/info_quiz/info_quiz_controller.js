@@ -69,7 +69,7 @@ const getInfoQuiz = async(req, res, next) => {
             if(!afterNow(documentType.endTime)) {
                 return res.status(status.success).json(
                     baseJson.baseJson({
-                        code: 3, message: "Đã hết thời gian làm bài",
+                        code: 3, message: "Đã hết thời gian làm bài", data: data
                     })
                 );
             }
@@ -85,7 +85,7 @@ const getInfoQuiz = async(req, res, next) => {
             if(afterNow(data.endTime)) {
                 return res.status(status.success).json(
                     baseJson.baseJson({
-                        code: 1, message: "Đã hết giờ làm bài",
+                        code: 1, message: "Đã hết giờ làm bài", data: data
                     })
                 );
             }            //trường hợp đã ấn nút bắt đầu còn thời gian làm bài
@@ -107,36 +107,39 @@ const getInfoQuiz = async(req, res, next) => {
     });
 };
 
-const getAllLabs = async(req, res, next) => {
+const updatePointInfoQuiz = async(req, res, next) => {
     //check role
-    var hasRole = await verifyRole(res, {
-        roleId: get_all_labs.id,
-        userId: req.user.id,
-    });
-    if(hasRole === false) {
-        return res
-        .status(status.success)
-        .json(
-            baseJson.baseJson({code: 99, message: "Tài khoản không có quyền"})
-        );
-    }
+    // var hasRole = await verifyRole(res, {
+    //     roleId: get_all_labs.id,
+    //     userId: req.user.id,
+    // });
+    // if(hasRole === false) {
+    //     return res
+    //     .status(status.success)
+    //     .json(
+    //         baseJson.baseJson({code: 99, message: "Tài khoản không có quyền"})
+    //     );
+    // }
     var filter;
-    if(req.query.idDocument) {
-        filter = {documentId: req.query.idDocument}
+    if(req.body.idDocumentType) {
+        filter = {idDocumentType: req.body.idDocumentType}
     }
     
     // find all labs
-    Lab.find(filter)
+    InfoQuizModel.updateOne(filter, {$set: {point: req.body.point, endTime: getNowFormatted()}})
     .then((data) => {
         return res.status(status.success).json(
             baseJson.baseJson({
-                code: 0,
-                data: baseJsonPage(0, 0, data.length, data),
+                code: 0, data: data
             })
         );
     })
     .catch((error) => {
-        next(error);
+        return res.status(status.success).json(
+            baseJson.baseJson({
+                code: 0, data: error
+            })
+        );
     });
 };
 
@@ -218,7 +221,7 @@ const updatelab = async(req, res) => {
 module.exports = {
     updateInfoQuiz,
     getInfoQuiz,
-    getAllLabs,
+    updatePointInfoQuiz,
     deleteLab,
     updatelab,
 };
