@@ -36,27 +36,35 @@ async function getQuestionByDanhMuc(req, res) {
     return QuizDocModel.find({idDanhMuc: req.query.idDanhMuc}).then(async(data) => {
         var mData = data;
         var lC = await AnswerModel.find().select("idCauHoi content id");
-        var listQuestion = await  QuestionModel.find();
- 
+        var listQuestion = await QuestionModel.find();
+        // return res.status(status.success).json(baseJson.baseJson({
+        //     code: 0,
+        //     data: baseJsonPage(0, 0, lC.length, lC)
+        // }));
+        var listResult = [];
         for(let i = 0; i < mData.length; i++) {
-            var listCauTraLoi = [];
-            for(let j = 0; j< listQuestion.length;j++){
-                if(mData[i].idCauHoi === listQuestion[j].id){
-                    for(var k=0; k< listQuestion[j].listCauTraLoi.length; k++){
-                        for(let l =0; l< lC.length; l++){
-                            if(listQuestion[j].listCauTraLoi[k] === lC[l].id){
-                                listCauTraLoi.push(lC[j]);
+           
+            for(let j = 0; j < listQuestion.length; j++) {
+                var   listCauTraLoi = [];
+                if(mData[i].idCauHoi === listQuestion[j].id) {
+                    for(var k = 0; k < listQuestion[j].listCauTraLoi.length; k++) {
+                        for(let l = 0; l < lC.length; l++) {
+                            if(listQuestion[j].listCauTraLoi[k] === lC[l].id) {
+                                // console.log(lC[l].content)
+                                listCauTraLoi.push(lC[l]);
                             }
                         }
                     }
-                    
-                }   listQuestion[j].listCauTraLoiObject = listCauTraLoi;
+                    listQuestion[j].listCauTraLoiObject = listCauTraLoi;
+                    listResult.push(  listQuestion[j])
+                }
+               
             }
-         
+           
         }
         return res.status(status.success).json(baseJson.baseJson({
             code: 0,
-            data: baseJsonPage(0, 0, listQuestion.length, listQuestion)
+            data: baseJsonPage(0, 0, listResult.length, listResult)
         }));
     });
     
