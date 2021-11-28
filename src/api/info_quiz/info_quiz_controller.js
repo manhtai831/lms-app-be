@@ -66,7 +66,7 @@ const getInfoQuiz = async(req, res, next) => {
         let documentType = await DocumentTypeModel.findOne({id: req.query.idDocumentType});
         if(data === null) {
             //trường hợp endTime nhỏ hơn thời gian hiện tại
-            if(afterNow(documentType.endTime)) {
+            if(!afterNow(documentType.endTime)) {
                 return res.status(status.success).json(
                     baseJson.baseJson({
                         code: 3, message: "Đã hết thời gian làm bài",
