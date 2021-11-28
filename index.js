@@ -23,6 +23,7 @@ const danhMucRouter = require("./src/api/danh_muc_lon/danh_muc_lon_route");
 const quizRouter = require("./src/api/quiz/quiz_route");
 const groupTypeRouter = require("./src/api/group_type/group_type_route");
 const quizDoc = require("./src/api/quiz_document/quiz_doc_route");
+const repoDepartRoute = require("./src/api/repo_department/repo_department_route");
 const status = require("./src/utils/status");
 const dotenv = require("dotenv");
 const express = require("express");
@@ -89,7 +90,7 @@ app.use(
     answerRoutes,
     questionRouter,
     fileAttachRouter,
-    danhMucRouter,
+    danhMucRouter,repoDepartRoute,
     quizRouter, rolesRoutes, groupTypeRouter,fileSystemRouter,quizDoc
 );
 app.use(function(req, res, next) {

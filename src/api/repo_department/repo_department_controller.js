@@ -1,6 +1,8 @@
 const status = require("../../utils/status");
 const baseJson = require("../../utils/base_json");
 const ReposityModel = require("../../model/resposity");
+const DepartmentModel = require("../../model/department_model");
+const ReposityDepartmentModel = require("../../model/repo_department");
 const {
     getNowFormatted,
     verifyRole,
@@ -22,47 +24,24 @@ const {baseJsonPage} = require("../../utils/base_json");
 const {uploadImage} = require("../../utils/image");
 
 
-async function createResposity(req, res) {
-    var hasRole = await verifyRole(res, {
-        roleId: get_reposity.id,
-        userId: req.user.id,
-    });
-    if(hasRole === false) {
-        return res
-        .status(status.success)
-        .json(
-            baseJson.baseJson({code: 99, message: "Tài khoản không có quyền"})
-        );
-    }
+async function createRespoDepartment(req, res) {
+    // var hasRole = await verifyRole(res, {
+    //     roleId: get_reposity.id,
+    //     userId: req.user.id,
+    // });
+    // if (hasRole === false) {
+    //     return res
+    //         .status(status.success)
+    //         .json(
+    //             baseJson.baseJson({code: 99, message: "Tài khoản không có quyền"})
+    //         );
+    // }
     
-    const user = await userModel
-    .findOne({id: req.user.id}).select("name");
-    
-    if(req.body.title == null) {
-        return res
-        .status(status.success)
-        .json(
-            baseJson.baseJson({code: 99, message: "Name repository is required"})
-        );
-    }
-    var resp;
-    if(req.body.data) {
-        var a = await uploadImage(req.body.data);
-        if(a) {
-            resp = a.url;
-        }
-    }
-    const resposity = ReposityModel({
-        title: req.body.title,
-        content: req.body.content,
-        image: resp,
-        type: req.body.type,
-        createdAt: getNowFormatted(),
-        createdBy: user,
-        updateAt: null,
-        updateBy: null
+    var repoDepart = await ReposityDepartmentModel({
+        idRepo: req.body.idRepo,
+        idDepartment: req.body.idDepartment
     })
-    return resposity
+    return repoDepart
     .save()
     .then((newData) => {
         return res.status(status.success).json(baseJson.baseJson({code: 0}));
@@ -74,7 +53,7 @@ async function createResposity(req, res) {
 }
 
 
-async function getRepository(req, res) {
+async function getRepoDepartment(req, res) {
     // var hasRole = await verifyRole(res, {
     //     roleId: create_reposity.id,
     //     userId: req.user.id,
@@ -87,29 +66,45 @@ async function getRepository(req, res) {
     //         );
     // }
     var filter;
-    if(req.query.title) {
-        filter = {"title": {"$regex": req.query.title, "$options": "i"}}
-        // filter = {title :req.query.title}
+    var listRD = [];
+    if(req.query.idDepartment) {
+        // filter = {"title": {"$regex": req.query.title, "$options": "i"}}
+        filter = {idDepartment: req.query.idDepartment};
+        listRD = await ReposityDepartmentModel.find(filter);
+        var listR = await ReposityModel.find();
+        
+        for(var i = 0; i < listRD.length; i++) {
+            for(var j = 0; j < listR.length; j++) {
+                if(listRD[i].idRepo === listR[j].id) {
+                    listRD[i].repo = listR[j];
+                }
+            }
+        }
     }
     
-    await ReposityModel
-    .find(filter)
-    .exec((error, result) => {
-        if(error) return baseJson.baseJson({
-            code: 99,
-        });
-        return res.status(status.success).json(
-            baseJson.baseJson({
-                code: 0,
-                data: baseJsonPage(0, 0, result.length, result)
-            }));
-        
-        
-    })
+    if(req.query.idRepo){
+        filter = {idRepo: req.query.idRepo};
+        listRD = await ReposityDepartmentModel.find(filter);
+        var listD = await DepartmentModel.find();
+    
+        for(var i = 0; i < listRD.length; i++) {
+            for(var j = 0; j < listD.length; j++) {
+                if(listRD[i].idDepartment === listD[j].id) {
+                    listRD[i].department = listD[j];
+                }
+            }
+        }
+    }
+   
+    return res.status(status.success).json(
+        baseJson.baseJson({
+            code: 0,
+            data: baseJsonPage(0, 0, listRD.length, listRD)
+        }));
     
 }
 
-async function updateRepository(req, res) {
+async function updateRepoDepartment(req, res) {
     /* var hasRole = await verifyRole(res, {
      roleId: update_class.id,
      userId: req.user.id,
@@ -125,30 +120,27 @@ async function updateRepository(req, res) {
         return res
         .status(status.success)
         .json(
-            baseJson.baseJson({code: 99, message: "ID repository is required"})
+            baseJson.baseJson({code: 99, message: "ID is required"})
         );
     }
     
-    const user = await userModel
-    .findOne({id: req.user.id})
-    .select(" name ");
-    var resp;
-    if(req.body.data) {
-        var a = await uploadImage(req.body.data);
-        if(a) {
-            resp = a.url;
-        }
-    }
-    return ReposityModel
+    // const user = await userModel
+    // .findOne({id: req.user.id})
+    // .select(" name ");
+    // var resp;
+    // if(req.body.data) {
+    //     var a = await uploadImage(req.body.data);
+    //     if(a) {
+    //         resp = a.url;
+    //     }
+    // }
+    return ReposityDepartmentModel
     .updateOne(
         {id: req.body.id},
         {
             $set: {
-                updateAt: getNowFormatted(),
-                updateBy: user, type: req.body.type,
-                title: req.body.title,
-                content: req.body.content,
-                image: resp
+                idRepo: req.body.idRepo,
+                idDepartment: req.body.idDepartment
             },
         }
     )
@@ -161,7 +153,7 @@ async function updateRepository(req, res) {
     });
 }
 
-async function deleteRepository(req, res) {
+async function deleteRepoDepartment(req, res) {
     /*ar hasRole = await verifyRole(res, {
      roleId: delete_class.id,
      userId: req.user.id,
@@ -181,7 +173,7 @@ async function deleteRepository(req, res) {
         );
     }
     
-    return ReposityModel
+    return ReposityDepartmentModel
     .deleteOne({id: req.body.id})
     .then(() => {
         return res.status(status.success).json(baseJson.baseJson({code: 0}));
@@ -193,9 +185,9 @@ async function deleteRepository(req, res) {
 }
 
 module.exports = {
-    createResposity,
-    getRepository,
-    updateRepository,
-    deleteRepository
+    createRespoDepartment,
+    getRepoDepartment,
+    updateRepoDepartment,
+    deleteRepoDepartment
     
 };

@@ -98,6 +98,9 @@ async function getListFileAttach(req, res) {
     } else if (req.query.idDocumentType) {
         filter = {idDocumentType: req.query.idDocumentType,}
     }
+else if (req.query.idDocumentType && req.query.idUser) {
+        filter = {idDocumentType: req.query.idDocumentType,idUser:req.query.idUser}
+    }
 
     //add data
     return FileAttachModel.find(filter)

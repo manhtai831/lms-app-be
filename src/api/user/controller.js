@@ -13,6 +13,7 @@ const {baseJson, baseJsonPage} = require("../../utils/base_json");
 const UserRoleModel = require("../../model/user_role_model");
 const GroupRoleModel = require("../../model/group_role");
 const mongoose = require("mongoose");
+const fs = require("fs");
 
 async function register(req, res) {
     let encryptedPassword;

@@ -9,6 +9,7 @@ const reposityModel = new mongoose.Schema({
         immutable: true,
     },
     title:String,
+    type:String,
     image: String,
     data: String,
     content: String,

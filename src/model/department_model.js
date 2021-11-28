@@ -12,6 +12,8 @@ const departmentModel = new mongoose.Schema({
 		type: String,
 		required: true,
 	},
+	listRepo:[],
+	listRepoObj:[],
 	idSemester:Number,
 	semester: Object,
 	image:String,

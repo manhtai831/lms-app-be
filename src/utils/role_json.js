@@ -195,11 +195,11 @@ module.exports = {
         id: 47,
         name: "Tạo danh mục lớn",
     },
-  create_quiz: {
+    create_quiz: {
         id: 48,
         name: "Tạo quiz",
     },
-   get_quiz: {
+    get_quiz: {
         id: 49,
         name: "Lấy danh sách quiz",
     },
