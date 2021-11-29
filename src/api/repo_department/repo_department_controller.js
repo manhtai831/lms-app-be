@@ -67,39 +67,49 @@ async function getRepoDepartment(req, res) {
     // }
     var filter;
     var listRD = [];
+    var listResult = [];
+    // listRD = await ReposityDepartmentModel.find();
     if(req.query.idDepartment) {
         // filter = {"title": {"$regex": req.query.title, "$options": "i"}}
-        filter = {idDepartment: req.query.idDepartment};
-        listRD = await ReposityDepartmentModel.find(filter);
-        var listR = await ReposityModel.find();
+        // filter = {idDepartment: req.query.idDepartment};
+        // listRD = await ReposityDepartmentModel.find(filter);
+        // var listR = await ReposityModel.find();
+        //
+        // for(var i = 0; i < listRD.length; i++) {
+        //     for(var j = 0; j < listR.length; j++) {
+        //         if(listRD[i].idRepo === listR[j].id) {
+        //             listRD[i].repo = listR[j];
+        //         }
+        //     }
+        // }
         
-        for(var i = 0; i < listRD.length; i++) {
-            for(var j = 0; j < listR.length; j++) {
-                if(listRD[i].idRepo === listR[j].id) {
-                    listRD[i].repo = listR[j];
+        var listDepartment = await DepartmentModel.find();
+        for(let i = 0; i < listDepartment.length; i++) {
+            for(let j = 0; j < listDepartment[i].listRepo.length; j++) {
+                if(listDepartment[i].listRepo[j] === req.query.idDepartment) {
+                    listResult.push(listDepartment[i])
                 }
             }
         }
     }
     
-    if(req.query.idRepo){
-        filter = {idRepo: req.query.idRepo};
-        listRD = await ReposityDepartmentModel.find(filter);
-        var listD = await DepartmentModel.find();
-    
-        for(var i = 0; i < listRD.length; i++) {
-            for(var j = 0; j < listD.length; j++) {
-                if(listRD[i].idDepartment === listD[j].id) {
-                    listRD[i].department = listD[j];
+    if(req.query.idRepository) {
+        var listDepartment = await DepartmentModel.find();
+        for(let i = 0; i < listDepartment.length; i++) {
+            for(let j = 0; j < listDepartment[i].listRepo.length; j++) {
+                console.log(listDepartment[i].listRepo);
+                if(listDepartment[i].listRepo[j] == req.query.idRepository) {
+                    listResult.push(listDepartment[i]);
+                    
                 }
             }
         }
     }
-   
+    
     return res.status(status.success).json(
         baseJson.baseJson({
             code: 0,
-            data: baseJsonPage(0, 0, listRD.length, listRD)
+            data: baseJsonPage(0, 0, listResult.length, listResult)
         }));
     
 }
