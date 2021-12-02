@@ -25,14 +25,13 @@ const groupTypeRouter = require("./src/api/group_type/group_type_route");
 const quizDoc = require("./src/api/quiz_document/quiz_doc_route");
 const repoDepartRoute = require("./src/api/repo_department/repo_department_route");
 const infoQuizRoute = require("./src/api/info_quiz/info_quiz_route");
-const status = require("./src/utils/status");
 const dotenv = require("dotenv");
 const express = require("express");
 const cors = require('cors');
-const fetch = require("node-fetch");
-const redis = require("redis");
+const axios = require("axios");
 const cachegoose = require('cachegoose');
-const {getMoreFormatted, afterNow, getNowFormatted} = require("./src/utils/utils");
+const {getMoreFormatted, afterNow, getNowFormatted, getNowMilliseconds} = require("./src/utils/utils");
+const {baseJson} = require("./src/utils/base_json");
 // get config vars
 dotenv.config();
 
@@ -67,9 +66,42 @@ mongoose
 
 app.get("/", function(req, res) {
     if(!res.headersSent) {
-        res.send("Thời gian hiện tại : " + getNowFormatted());
+        res.send("Thời gian hiện tại : " + getNowFormatted() + '. Bạn đã có thể quay trở lại');
     }
     res.end();
+});
+app.get("/api/send_notification", function(req, res) {
+    if( req.query.fcm_key == null){
+        res.send('Yêu cầu không khả dụng');
+        return res.status(200).json(baseJson({code:99,data:"fcm_key is required"}));
+    }
+    axios.post('https://fcm.googleapis.com/fcm/send', {
+        
+        "to": req.query.fcm_key,
+        "notification": {
+            "body": "Điểm của bạn đã được cập nhật",
+            "title": "Thông báo LMS App",
+            "click_action": ""
+        },
+        "data": {
+            "idClass": "32",
+            "idSubject": "31"
+            
+        }
+    }, {
+        headers: {
+            accept: 'application/json',
+            Authorization: 'key=AAAAz8dVYTg:APA91bEAh3Pn3LN1nD5X2VItbfIBJT0pEyLnruW5lAMhe01emd_BbQDNLl4VjP0SrsCFb5rPnpZqA4Kl0n4qaBLfYfBXcjNquoOTgpFC0mF-uyoSS_KG_uXEGdYHJhsT7ISIeiWXWrMT'
+        }
+    })
+    .then(function(response) {
+        console.log(response);
+        return res.status(200).json(baseJson({code:0}));
+    })
+    // .catch(function(error) {
+    //     // console.log(error);
+    //     return res.send("Gửi thông báo lỗi")
+    // });
 });
 
 app.use(
@@ -93,11 +125,11 @@ app.use(
     danhMucRouter, repoDepartRoute,
     quizRouter, rolesRoutes, groupTypeRouter, fileSystemRouter, quizDoc, infoQuizRoute
 );
+
 app.use(function(req, res, next) {
     res.setHeader('Access-Control-Allow-Origin', '*');
     next();
 });
-
 app.listen(app.get("port"), function() {
     console.log(Date.now());
     console.log("Listening on port " + app.get("port"));
