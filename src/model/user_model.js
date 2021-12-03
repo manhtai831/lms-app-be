@@ -30,6 +30,7 @@ const userModel = new mongoose.Schema({
 	chuyenNganhId: Number,
 	kiHoc : Object,
 	kiHocId : Number,
+	fcmToken :String
 });
 
 autoIncrement.initialize(mongoose.connection);

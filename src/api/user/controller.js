@@ -54,7 +54,7 @@ async function register(req, res) {
             chuyenNganhId: req.body.chuyenNganhId,
             kiHocId: req.body.kiHocId,
             idGroup: req.body.idGroup,
-            permission: listRoleDefault,
+            permission: [],
             userName: userName,
             email: userName, // sanitize: convert email to lowercase
             password: password,
@@ -105,7 +105,11 @@ async function login(req, res) {
         const user = await userModel
             .findOne({userName: userName, password: password});
         // .select("id permission name userName email token birth phoneNumber avatar chuyenNganh kiHoc");
-
+        if(req.body.fcmToken){
+            await userModel.updateOne({userName: userName, password: password},{$set:{
+                fcmToken:req.body.fcmToken
+                }});
+        }
         if (user) {
             // Create token
             const token = jwt.sign({id: user.id}, process.env.ACCESS_TOKEN_SECRET, {
@@ -352,6 +356,7 @@ async function resetPassword(req, res) {
 
 const {uploadImage} = require("../../utils/image");
 var path = require('path');
+const {set} = require("mongoose");
 var dir = path.join(__dirname, '../../images');
 
 async function showImage(req, res) {
