@@ -69,25 +69,26 @@ async function register(req, res) {
         );
 
         user.token = token;
-        await user.save().then(async (data) => {
-            for (var i = 0; i < listRoleDefault.length; i++) {
-                const userRoleModel = new UserRoleModel({
-                    idUser: data.id,
-                    idRole: listRoleDefault[i],
-                });
-                await userRoleModel.save();
-            }
-            res.status(200).json(
-                baseJson({
-                    code: 0,
-                    message: "Success",
-                })
-            );
-        });
+    
+       return res.status(200).json(
+            baseJson({
+                code: 0,
+            })
+        );
+        // await user.save().then(async (data) => {
+        //     for (var i = 0; i < listRoleDefault.length; i++) {
+        //         const userRoleModel = new UserRoleModel({
+        //             idUser: data.id,
+        //             idRole: listRoleDefault[i],
+        //         });
+        //         await userRoleModel.save();
+        //     }
+        //
+        // });
 
     } catch (err) {
         console.log(err);
-        res.status(500).json(baseJson({code: 99, data: err}));
+      return  res.status(500).json(baseJson({code: 99, data: err}));
     }
 }
 
