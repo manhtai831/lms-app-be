@@ -123,11 +123,15 @@ async function uploadImage(mBase64) {
         await authorize(JSON.parse(content), uploadFile);
         
     });
-    await wait(2.5)
+    await wait(3)
     console.log('https://drive.google.com/file/d/' + fileUploadId + '/view');
+    // https://drive.google.com/uc?export=view&id=1VdjEgb0aZl9IZa2jOzGU5_SNbmlmeiCj
+    //https://drive.google.com/uc?export=download&id=1PpUCg8U0YkedIPYmm2NtLXt00JsdBJt2
+    //https://drive.google.com/file/d/{id}/view
+    //http://drive.google.com/thumbnail?id=
     return {
         'type': content,
-        'url': 'https://drive.google.com/file/d/' + fileUploadId + '/view'
+        'url': 'https://drive.google.com/uc?export=view&id=' + fileUploadId
     }
 }
 

@@ -1,6 +1,7 @@
 const Lab = require("../../model/lab_model");
 const InfoQuizModel = require("../../model/quiz_info_model");
 const DocumentTypeModel = require("../../model/document_type_model");
+const UserModel = require("../../model/user_model");
 const status = require("../../utils/status");
 const baseJson = require("../../utils/base_json");
 const {
@@ -63,7 +64,9 @@ const getInfoQuiz = async(req, res, next) => {
     
     return InfoQuizModel.findOne({idUser: req.user.id, idDocumentType: req.query.idDocumentType,})
     .then(async(data) => {
-        let documentType = await DocumentTypeModel.findOne({id: req.query.idDocumentType});
+        let documentType = await DocumentTypeModel.findOne({id: data.idDocumentType});
+        
+        
         if(data === null) {
             //trường hợp endTime nhỏ hơn thời gian hiện tại
             if(!afterNow(documentType.endTime)) {
@@ -81,6 +84,9 @@ const getInfoQuiz = async(req, res, next) => {
             );
             
         } else {
+            let user = await UserModel.findOne({id: data.idUser}).select("id name");
+            data.documentType = documentType;
+            data.user = user;
             //trường hợp đã ấn nút bắt đầu hêt thời gian làm bài
             if(afterNow(data.endTime)) {
                 return res.status(status.success).json(
@@ -96,6 +102,51 @@ const getInfoQuiz = async(req, res, next) => {
                 })
             );
         }
+        
+    })
+    .catch((error) => {
+        return res.status(status.success).json(
+            baseJson.baseJson({
+                code: 99, data: error
+            })
+        );
+    });
+};
+
+const getInfoMoreQuiz = async(req, res, next) => {
+    if(req.query.idDocumentType == null){
+        return res.status(status.success).json(
+            baseJson.baseJson({
+                code: 99, message: "idDocumentType is required"
+            })
+        );
+    }
+    let listDocumentType = await DocumentTypeModel.find();
+    
+    let listUser = await UserModel.find().select("id name");
+    return InfoQuizModel.find({idDocumentType: req.query.idDocumentType,})
+    .then(async(data) => {
+       for(var i =0; i< data.length;i++){
+           for( var j =0; j< listDocumentType.length ;j++){
+               if(data[i].idDocumentType === listDocumentType[j].id){
+                   data[i].documentType = listDocumentType[j];
+               }
+           }
+            for( var k =0; k< listUser.length ;k++){
+               if(data[i].idUser === listUser[k].id){
+                   data[i].user = listUser[k];
+               }
+           }
+           
+       }
+       
+            return res.status(status.success).json(
+                baseJson.baseJson({
+                    code: 0, data: baseJsonPage(0,0,data.length,data)
+                })
+            );
+       
+        
         
     })
     .catch((error) => {
@@ -221,7 +272,7 @@ const updatelab = async(req, res) => {
 module.exports = {
     updateInfoQuiz,
     getInfoQuiz,
-    updatePointInfoQuiz,
+    updatePointInfoQuiz,getInfoMoreQuiz,
     deleteLab,
     updatelab,
 };

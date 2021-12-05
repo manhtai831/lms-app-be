@@ -18,6 +18,8 @@ const classModel = new mongoose.Schema({
     idSubject: Number,
     listGroupType:[],
     listFileSystem:[],
+    idGiangVien:Number,
+    giangVien:Object,
     subject:Object,
     createAt: String,
     createBy: Object,

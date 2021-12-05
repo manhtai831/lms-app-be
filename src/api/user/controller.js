@@ -229,9 +229,9 @@ async function getListUser(req, res) {
         var kh = await SemesterModel.find().select("id name");
 
         for (var i = 0; i < users.length; i++) {
-            var g;
-            var c;
-            var k;
+            var g = null;
+            var c = null;
+            var k = null;
             group.forEach((element)=>{
                 if(element.id === users[i].idGroup){
                     g = element;

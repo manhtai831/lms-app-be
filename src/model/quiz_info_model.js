@@ -9,7 +9,9 @@ const QuizInfoModel = new mongoose.Schema({
         immutable: true,
     },
     idDocumentType:Number,
+    documentType:Object,
     idUser:Number,
+    user:Object,
     startTime:String,
     endTime:String,
     point:Number

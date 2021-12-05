@@ -39,6 +39,7 @@ async function createClass(req, res) {
         name: req.body.name,
         description: req.body.description,
         idSubject: req.body.idSubject,
+        idGiangVien: req.body.idGiangVien,
         createAt: getNowFormatted(),
         createBy: user,
     });
@@ -83,9 +84,21 @@ async function getAllClass(req, res) {
         .find(filter)
         .exec(async (error, result) => {
             var datatmp = result;
+            var listSubject  = await SubjectModel.find().select("id name idDepartment");
+            var listUser = await userModel.find().select("id name");
             for (var i = 0; i < datatmp.length; i++) {
                 // result[i].createBy = await userModel.findOne({id: result[i].createBy.id}).select("id name userName email avatar");
-                datatmp[i].subject = await SubjectModel.findOne({id: datatmp[i].idSubject}).select("id name idDepartment");
+                for(var j = 0; j< listSubject.length;j++){
+                    if(datatmp[i].idSubject === listSubject[j].id){
+                        datatmp[i].subject=listSubject[j];
+                    }
+                } for(var k = 0; k< listUser.length;k++){
+                    if(datatmp[i].idGiangVien === listUser[k].id){
+                        datatmp[i].giangVien=listUser[k];
+                    }
+                }
+                // datatmp[i].subject = await SubjectModel.find({id: datatmp[i].idSubject}).select("id name idDepartment");
+                // datatmp[i].giangVien = await userModel.find({id: datatmp[i].idGiangVien}).select("id name");
                 console.log(datatmp[i].subject)
             }
             return res.status(status.success).json(
@@ -175,6 +188,7 @@ async function updateClass(req, res) {
                     updateBy: user,
                     name: req.body.name,
                     idSubject: req.body.idSubject,
+                    idGiangVien: req.body.idGiangVien,
                     description: req.body.description,
                 },
             }

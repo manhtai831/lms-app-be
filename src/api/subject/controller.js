@@ -75,6 +75,10 @@ const getAllSubjects = async (req, res, next) => {
 	if(req.query.idDepartment){
 		filter = {idDepartment: req.query.idDepartment}
 	}
+	
+	if(req.query.name){
+		filter = {"name": {"$regex": req.query.name, "$options": "i"}}
+	}
 
 	//find all subjects
 	Subject.find(filter)
