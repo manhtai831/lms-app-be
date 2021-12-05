@@ -78,36 +78,39 @@ app.get("/api/send_notification", async function(req, res) {
     var user = await UserModel.findOne({id: req.query.idUser});
     
     if(user.fcmToken) {
-        var info = await FileAttachModel.findOne({id: req.query.idFileAttach,})
-        axios.post('https://fcm.googleapis.com/fcm/send', {
+        var info = await FileAttachModel.findOne({id: req.query.idFileAttach})
+       if(info){
+           axios.post('https://fcm.googleapis.com/fcm/send', {
+        
+               "to": user.fcm_key,
+               "notification": {
+                   "body": 'Giảng viên đã cập nhật điểm của bạn là ' + info.point + '\nGhi chú: ' + info.note,
+                   "title": "Thông báo LMS App",
+                   "click_action": ""
+               },
+               "data": {
+                   "idClass": "32",
+                   "idSubject": "31"
             
-            "to": req.query.fcm_key,
-            "notification": {
-                "body": 'Giảng viên đã cập nhật điểm của bạn là ' + info.point + '\nGhi chú: ' + info.note,
-                "title": "Thông báo LMS App",
-                "click_action": ""
-            },
-            "data": {
-                "idClass": "32",
-                "idSubject": "31"
-                
-            }
-        }, {
-            headers: {
-                accept: 'application/json',
-                Authorization: 'key=AAAAz8dVYTg:APA91bEAh3Pn3LN1nD5X2VItbfIBJT0pEyLnruW5lAMhe01emd_BbQDNLl4VjP0SrsCFb5rPnpZqA4Kl0n4qaBLfYfBXcjNquoOTgpFC0mF-uyoSS_KG_uXEGdYHJhsT7ISIeiWXWrMT'
-            }
-        })
-        .then(function(response) {
-            console.log(response);
-            return res.status(200).json(baseJson({code: 0}));
-        })
-        // .catch(function(error) {
-        //     // console.log(error);
-        //     return res.send("Gửi thông báo lỗi")
-        // });
+               }
+           }, {
+               headers: {
+                   accept: 'application/json',
+                   Authorization: 'key=AAAAz8dVYTg:APA91bEAh3Pn3LN1nD5X2VItbfIBJT0pEyLnruW5lAMhe01emd_BbQDNLl4VjP0SrsCFb5rPnpZqA4Kl0n4qaBLfYfBXcjNquoOTgpFC0mF-uyoSS_KG_uXEGdYHJhsT7ISIeiWXWrMT'
+               }
+           })
+           .then(function(response) {
+               console.log(response);
+               return res.status(200).json(baseJson({code: 0}));
+           })
+           // .catch(function(error) {
+           //     // console.log(error);
+           //     return res.send("Gửi thông báo lỗi")
+           // });
+       }
+       
     }
-    
+    return res.status(200).json(baseJson({code: 99}));
 });
 
 app.use(
