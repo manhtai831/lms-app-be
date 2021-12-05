@@ -25,6 +25,8 @@ const groupTypeRouter = require("./src/api/group_type/group_type_route");
 const quizDoc = require("./src/api/quiz_document/quiz_doc_route");
 const repoDepartRoute = require("./src/api/repo_department/repo_department_route");
 const infoQuizRoute = require("./src/api/info_quiz/info_quiz_route");
+const UserModel = require("./src/model/user_model");
+const auth = require("./src/middleware/auth_controller");
 const dotenv = require("dotenv");
 const express = require("express");
 const cors = require('cors');
@@ -32,6 +34,8 @@ const axios = require("axios");
 const cachegoose = require('cachegoose');
 const {getMoreFormatted, afterNow, getNowFormatted, getNowMilliseconds} = require("./src/utils/utils");
 const {baseJson} = require("./src/utils/base_json");
+const FileAttachModel = require("./src/model/file_attach_model");
+
 // get config vars
 dotenv.config();
 
@@ -70,38 +74,40 @@ app.get("/", function(req, res) {
     }
     res.end();
 });
-app.get("/api/send_notification", function(req, res) {
-    if( req.query.fcm_key == null){
-        res.send('Yêu cầu không khả dụng');
-        return res.status(200).json(baseJson({code:99,data:"fcm_key is required"}));
-    }
-    axios.post('https://fcm.googleapis.com/fcm/send', {
-        
-        "to": req.query.fcm_key,
-        "notification": {
-            "body": "Điểm của bạn đã được cập nhật",
-            "title": "Thông báo LMS App",
-            "click_action": ""
-        },
-        "data": {
-            "idClass": "32",
-            "idSubject": "31"
+app.get("/api/send_notification", async function(req, res) {
+    var user = await UserModel.findOne({id: req.query.idUser});
+    
+    if(user.fcmToken) {
+        var info = await FileAttachModel.findOne({id: req.query.idFileAttach,})
+        axios.post('https://fcm.googleapis.com/fcm/send', {
             
-        }
-    }, {
-        headers: {
-            accept: 'application/json',
-            Authorization: 'key=AAAAz8dVYTg:APA91bEAh3Pn3LN1nD5X2VItbfIBJT0pEyLnruW5lAMhe01emd_BbQDNLl4VjP0SrsCFb5rPnpZqA4Kl0n4qaBLfYfBXcjNquoOTgpFC0mF-uyoSS_KG_uXEGdYHJhsT7ISIeiWXWrMT'
-        }
-    })
-    .then(function(response) {
-        console.log(response);
-        return res.status(200).json(baseJson({code:0}));
-    })
-    // .catch(function(error) {
-    //     // console.log(error);
-    //     return res.send("Gửi thông báo lỗi")
-    // });
+            "to": req.query.fcm_key,
+            "notification": {
+                "body": 'Giảng viên đã cập nhật điểm của bạn là ' + info.point + '\nGhi chú: ' + info.note,
+                "title": "Thông báo LMS App",
+                "click_action": ""
+            },
+            "data": {
+                "idClass": "32",
+                "idSubject": "31"
+                
+            }
+        }, {
+            headers: {
+                accept: 'application/json',
+                Authorization: 'key=AAAAz8dVYTg:APA91bEAh3Pn3LN1nD5X2VItbfIBJT0pEyLnruW5lAMhe01emd_BbQDNLl4VjP0SrsCFb5rPnpZqA4Kl0n4qaBLfYfBXcjNquoOTgpFC0mF-uyoSS_KG_uXEGdYHJhsT7ISIeiWXWrMT'
+            }
+        })
+        .then(function(response) {
+            console.log(response);
+            return res.status(200).json(baseJson({code: 0}));
+        })
+        // .catch(function(error) {
+        //     // console.log(error);
+        //     return res.send("Gửi thông báo lỗi")
+        // });
+    }
+    
 });
 
 app.use(
