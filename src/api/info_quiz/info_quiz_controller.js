@@ -64,10 +64,10 @@ const getInfoQuiz = async(req, res, next) => {
     
     return InfoQuizModel.findOne({idUser: req.user.id, idDocumentType: req.query.idDocumentType,})
     .then(async(data) => {
-        let documentType = await DocumentTypeModel.findOne({id: data.idDocumentType});
+        let documentType = await DocumentTypeModel.findOne({id: req.query.idDocumentType});
+        console.log(data);
         
-        
-        if(data === null) {
+        if(data == null) {
             //trường hợp endTime nhỏ hơn thời gian hiện tại
             if(!afterNow(documentType.endTime)) {
                 return res.status(status.success).json(
@@ -105,6 +105,7 @@ const getInfoQuiz = async(req, res, next) => {
         
     })
     .catch((error) => {
+        console.log(error);
         return res.status(status.success).json(
             baseJson.baseJson({
                 code: 99, data: error

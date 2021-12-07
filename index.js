@@ -82,7 +82,7 @@ app.get("/api/send_notification", async function(req, res) {
        if(info){
            axios.post('https://fcm.googleapis.com/fcm/send', {
         
-               "to": user.fcm_key,
+               "to": user.fcmToken,
                "notification": {
                    "body": 'Giảng viên đã cập nhật điểm của bạn là ' + info.point + '\nGhi chú: ' + info.note,
                    "title": "Thông báo LMS App",
