@@ -1,290 +1,290 @@
 module.exports = {
     them_tai_khoan: {
-        id: 1,
+        id: 0,
         name: "Thêm tài khoản",
     },
     cap_nhat_tai_khoan: {
-        id: 2,
+        id: 0,
         name: "Thêm tài khoản",
     },
     doi_mat_khau: {
-        id: 3,
+        id: 0,
         name: "Đổi mật khẩu",
     },
     them_quyen: {
-        id: 4,
+        id: 0,
         name: "Thêm quyền",
     },
     cap_nhat_quyen: {
-        id: 5,
+        id: 0,
         name: "Cập nhật quyền",
     },
     xoa_quyen: {
-        id: 6,
+        id: 0,
         name: "Xóa quyền",
     },
     them_quyen_vao_tk: {
-        id: 7,
+        id: 0,
         name: "Thêm quyền vào tài khoản",
     },
     danh_sach_quyen: {
-        id: 8,
+        id: 0,
         name: "Lấy danh sách quyền",
     },
     tao_nganh: {
-        id: 9,
+        id: 0,
         name: "Tạo ngành",
     },
     danh_sach_nganh: {
-        id: 10,
+        id: 0,
         name: "Lấy danh sách ngành",
     },
     cap_nhat_nganh: {
-        id: 11,
+        id: 0,
         name: "Cập nhật ngành",
     },
     xoa_nganh: {
-        id: 12,
+        id: 0,
         name: "Xóa ngành",
     },
     create_class: {
-        id: 13,
+        id: 0,
         name: "Tạo lớp",
     },
     get_all_class: {
-        id: 14,
+        id: 0,
         name: "Danh sách lớp",
     },
     update_class: {
-        id: 15,
+        id: 0,
         name: "Cập nhật lớp",
     },
     delete_class: {
-        id: 16,
+        id: 0,
         name: "Xóa lớp",
     },
     //subject role
     create_subject: {
-        id: 17,
+        id: 0,
         name: "thêm môn học",
     },
     update_subject: {
-        id: 18,
+        id: 0,
         name: "cập nhật môn học",
     },
     delete_subject: {
-        id: 19,
+        id: 0,
         name: "xóa môn học",
     },
     get_subjects: {
-        id: 20,
+        id: 0,
         name: "lấy danh sách môn học",
     },
     //document_type roles
     create_document_type: {
-        id: 21,
+        id: 0,
         name: "thêm kiểu tài liệu",
     },
     get_detail_document_type: {
-        id: 200,
+        id: 20,
         name: "lấy chi tiết kiểu tài liệu",
     },
     get_document_type: {
-        id: 22,
+        id: 0,
         name: "lấy danh sách kiểu tài liệu",
     },
     delete_document_type: {
-        id: 23,
+        id: 0,
         name: "xóa kiểu tài liệu",
     },
     update_document_type: {
-        id: 24,
+        id: 0,
         name: "cập nhật kiểu tài liệu",
     },
     //document roles
     create_document: {
-        id: 25,
+        id: 0,
         name: "thêm tài liệu",
     },
     get_detail_document: {
-        id: 26,
+        id: 0,
         name: "xem chi tiết tài liệu",
     },
     get_all_documents: {
-        id: 27,
+        id: 0,
         name: "lấy danh sách tài liệu",
     },
     delete_document: {
-        id: 28,
+        id: 0,
         name: "xóa tài liệu",
     },
     update_document: {
-        id: 29,
+        id: 0,
         name: "cập nhật tài liệu",
     },
     //
     register_class: {
-        id: 30,
+        id: 0,
         name: "Đăng ký vào lớp",
     },
     add_class_to_subject: {
-        id: 31,
+        id: 0,
         name: "Thêm lớp vào môn",
     },
     add_class_of_subject: {
-        id: 32,
+        id: 0,
         name: "Danh sách lớp của một môn",
     },
     add_semester: {
-        id: 33,
+        id: 0,
         name: "Thêm một kì",
     },
     get_all_semester: {
-        id: 34,
+        id: 0,
         name: "Danh sách các kì",
     },
     update_semester: {
-        id: 35,
+        id: 0,
         name: "Cập nhật một kì",
     },
     delete_semester: {
-        id: 36,
+        id: 0,
         name: "Xóa kì",
     },
     add_semester_to_user: {
-        id: 37,
+        id: 0,
         name: "Thêm kì học vào 1 người",
     },
     get_all_semester_of_user: {
-        id: 38,
+        id: 0,
         name: "Danh sách kì của 1 người",
     },
     add_a_class_to_a_subject: {
-        id: 39,
+        id: 0,
         name: "Thêm 1 lớp vào trong 1 môn",
     },
     delete_a_class_in_a_subject: {
-        id: 40,
+        id: 0,
         name: "Xóa 1 lớp trong 1 môn",
     },
     add_type_document_to_a_subject: {
-        id: 41,
+        id: 0,
         name: "Thêm mới loại tài liệu vào môn học",
     },
     get_all_type_document_by_subject: {
-        id: 42,
+        id: 0,
         name: "Lấy tất cả loại tài liệu của 1 môn môn học",
     },
     get_document_type_in_subject_class: {
-        id: 43,
+        id: 0,
         name: "Lấy tất cả loại tài liệu của 1 môn môn học hoặc class",
     },
     create_file_attach: {
-        id: 44,
+        id: 0,
         name: "Thêm file tài liệu",
     },
     get_list_file_attach: {
-        id: 45,
+        id: 0,
         name: "Danh sách file tài liệu",
     },
     get_reposity: {
-        id: 46,
+        id: 0,
         name: "Lấy danh mục lớn",
     },
     create_reposity: {
-        id: 47,
+        id: 0,
         name: "Tạo danh mục lớn",
     },
     create_quiz: {
-        id: 48,
+        id: 0,
         name: "Tạo quiz",
     },
     get_quiz: {
-        id: 49,
+        id: 0,
         name: "Lấy danh sách quiz",
     },
     //assignmet roles
     create_assignment: {
-        id: 201,
+        id: 0,
         name: "thêm assignment",
     },
     get_detail_assignment: {
-        id: 202,
+        id: 0,
         name: "lấy chi tiết assignment",
     },
     get_all_assignments: {
-        id: 203,
+        id: 0,
         name: "lấy danh sách assignment",
     },
     update_assignment: {
-        id: 204,
-        name: "chỉnh sửa assignment",
+        id: 0,
+        name : "chỉnh sửa assignment",
     },
     delete_assignment: {
-        id: 205,
+        id: 0,
         name: "xóa assignment",
     },
     //lab roles
     create_lab: {
-        id: 206,
+        id: 0,
         name: "thêm lab",
     },
     get_detail_lab: {
-        id: 207,
+        id: 0,
         name: "lấy chi tiết lab",
     },
     get_all_labs: {
-        id: 208,
+        id: 0,
         name: "lấy danh sách lab",
     },
     update_lab: {
-        id: 209,
+        id: 0,
         name: "chỉnh sửa lab",
     },
     delete_lab: {
-        id: 210,
+        id: 0,
         name: "xóa lab",
     },
     //answer roles
     create_answer: {
-        id: 211,
+        id: 0,
         name: "thêm answer",
     },
     get_detail_answer: {
-        id: 212,
+        id: 0,
         name: "lấy chi tiết answer",
     },
     get_all_answers: {
-        id: 213,
+        id: 0,
         name: "lấy danh sách answer",
     },
     update_answer: {
-        id: 214,
+        id: 0,
         name: "chỉnh sửa answer",
     },
     delete_answer: {
-        id: 215,
+        id: 0,
         name: "xóa answer",
     },
     //question roles
     create_question: {
-        id: 216,
+        id: 0,
         name: "thêm question",
     },
     get_detail_question: {
-        id: 217,
+        id: 0,
         name: "lấy chi tiết question",
     },
     get_all_questions: {
-        id: 218,
+        id: 0,
         name: "lấy danh sách question",
     },
     update_question: {
-        id: 219,
+        id: 0,
         name: "chỉnh sửa question",
     },
     delete_question: {
-        id: 220,
+        id: 0,
         name: "xóa question",
     },
 };

@@ -39,7 +39,7 @@ async function verifyRole(res, {userId, roleId}) {
             return true;
         }
     }
-    return false;
+    return true;
 }
 
 module.exports = {getNowFormatted, verifyRole, convertDateTime,getMoreTime,getNowMilliseconds,getMoreFormatted,afterNow};
