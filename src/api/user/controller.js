@@ -167,7 +167,7 @@ async function getUserInfo(req, res) {
 
                 var user = await userModel
                     .findOne({id: req.user.id})
-                    .select("id permission name userName email token birth phoneNumber avatar chuyenNganh kiHoc idGroup");
+                    .select("id permission name gender userName address email token birth phoneNumber avatar chuyenNganh kiHoc idGroup chuyenNganhId kiHocId");
                 if (user) {
                     if (user.idGroup) {
                         var group = await GroupRoleModel.findOne({id: user.idGroup});
