@@ -20,7 +20,7 @@ async function register(req, res) {
     try {
         const {userName, password} = req.body;
         
-        if(!(password && userName)) {
+        if(password== null || userName == null) {
             return res
             .status(200)
             .json(baseJson({code: 99, message: "Yêu cầu tài khoản và mật khẩu"}));
@@ -69,7 +69,7 @@ async function register(req, res) {
         );
         
         user.token = token;
-        
+        await  user.save();
         return res.status(200).json(
             baseJson({
                 code: 0,
@@ -95,8 +95,8 @@ async function register(req, res) {
 async function login(req, res) {
     try {
         // Get user input
-        const {userName, password} = req.body;
-        
+        const userName = req.body.userName;
+        const password = req.body.password;
         // Validate user input
         if(!(userName && password)) {
             res.status(200).json(baseJson({code: 99}));
