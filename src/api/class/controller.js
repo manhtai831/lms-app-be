@@ -72,9 +72,19 @@ async function getAllClass(req, res) {
     const index = req.query.pageIndex || 1;
     const size = req.query.pageSize || 50;
     var filter;
+    var listSubject = [];
     if (req.query.idSubject) {
         filter = {idSubject: req.query.idSubject};
     }
+    // if (req.query.idDepartment) {
+    //
+    //     await SubjectModel.find({idDepartment: req.query.idDepartment}).then((data)=>{
+    //         data.forEach((element)=>{
+    //             listSubject.push(element.id);
+    //         })
+    //
+    //     })
+    // }
     if (req.query.name) {
         filter=   { "name": { "$regex": req.query.name, "$options": "i" } }
         // filter = {title :req.query.title}
@@ -97,9 +107,6 @@ async function getAllClass(req, res) {
                         datatmp[i].giangVien=listUser[k];
                     }
                 }
-                // datatmp[i].subject = await SubjectModel.find({id: datatmp[i].idSubject}).select("id name idDepartment");
-                // datatmp[i].giangVien = await userModel.find({id: datatmp[i].idGiangVien}).select("id name");
-                console.log(datatmp[i].subject)
             }
             return res.status(status.success).json(
                 baseJson.baseJson({

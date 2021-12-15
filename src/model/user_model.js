@@ -23,6 +23,8 @@ const userModel = new mongoose.Schema({
 	birth: String,
 	token: String,
 	permission: [],
+	listClassId:[],
+	listClass:[],
 	idGroup: Number,
 	nameGroup: String,
 	avatar: String,

@@ -11,6 +11,7 @@ const RoleModel = require("../../model/role_model");
 const bcrypt = require("bcrypt");
 const {baseJson, baseJsonPage} = require("../../utils/base_json");
 const UserRoleModel = require("../../model/user_role_model");
+const ClassModel = require("../../model/class_model");
 const GroupRoleModel = require("../../model/group_role");
 const mongoose = require("mongoose");
 const fs = require("fs");
@@ -20,7 +21,7 @@ async function register(req, res) {
     try {
         const {userName, password} = req.body;
         
-        if(password== null || userName == null) {
+        if(password == null || userName == null) {
             return res
             .status(200)
             .json(baseJson({code: 99, message: "Yêu cầu tài khoản và mật khẩu"}));
@@ -55,8 +56,9 @@ async function register(req, res) {
             kiHocId: req.body.kiHocId,
             idGroup: req.body.idGroup,
             permission: [],
+            listClassId: req.body.listClassId,
             userName: userName,
-            email: userName, // sanitize: convert email to lowercase
+            email: req.body.email, // sanitize: convert email to lowercase
             password: password,
         });
         
@@ -69,7 +71,7 @@ async function register(req, res) {
         );
         
         user.token = token;
-        await  user.save();
+        await user.save();
         return res.status(200).json(
             baseJson({
                 code: 0,
@@ -169,7 +171,7 @@ async function getUserInfo(req, res) {
         
         var user = await userModel
         .findOne({id: req.user.id})
-        .select("id permission name gender userName address email token birth phoneNumber avatar chuyenNganh kiHoc idGroup chuyenNganhId kiHocId");
+        .select("id permission name gender userName address email token birth phoneNumber avatar chuyenNganh kiHoc idGroup chuyenNganhId kiHocId ");
         if(user) {
             if(user.idGroup) {
                 var group = await GroupRoleModel.findOne({id: user.idGroup});
@@ -229,15 +231,17 @@ async function getListUser(req, res) {
             filter = {"name": {"$regex": req.query.name, "$options": "i"}}
         }
         var users = await userModel
-        .find(filter).select("maSV id name userName password email birth phoneNumber avatar chuyenNganh kiHoc address status gender nameGroup idGroup chuyenNganhId  kiHocId");
+        .find(filter).select("maSV id name userName password email birth phoneNumber avatar chuyenNganh kiHoc address status gender nameGroup idGroup chuyenNganhId  kiHocId listClassId");
         var group = await GroupRoleModel.find();
         var cn = await DepartmentModel.find().select("id name");
         var kh = await SemesterModel.find().select("id name");
+        var cl = await ClassModel.find().select("id name")
         
         for(var i = 0; i < users.length; i++) {
             var g = null;
             var c = null;
             var k = null;
+            var l = [];
             group.forEach((element) => {
                 if(element.id === users[i].idGroup) {
                     g = element;
@@ -253,6 +257,13 @@ async function getListUser(req, res) {
                     k = element;
                 }
             })
+            users[i].listClassId.forEach((element) => {
+                cl.forEach((element1) => {
+                    if(element === element1.id) {
+                        l.push(element1)
+                    }
+                });
+            })
             
             if(g)
                 users[i].nameGroup = g.name;
@@ -260,6 +271,24 @@ async function getListUser(req, res) {
             users[i].chuyenNganh = c;
             
             users[i].kiHoc = k;
+            users[i].listClass = l;
+        }
+        var listUser;
+        if(req.query.idClass) {
+            listUser = [];
+            for(var i = 0; i < users.length; i++) {
+                for(var j = 0; j < users[i].listClassId.length; j++) {
+                    for(var k = 0; k < cl.length; k++) {
+                        if(users[i].listClassId[j] === cl[k].id) {
+                            listUser.push(users[i]);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        if(listUser) {
+            return res.status(200).json(baseJson({code: 0, data: baseJsonPage(0, 0, listUser.length, listUser)}));
         }
         if(users) {
             return res.status(200).json(baseJson({code: 0, data: baseJsonPage(0, 0, users.length, users)}));
@@ -305,6 +334,7 @@ async function updateUser(req, res) {
             maSV: req.body.maSV,
             status: req.body.status,
             avatar: resp,
+            listClassId: req.body.listClassId,
             birth: req.body.birth,
             phoneNumber: req.body.phoneNumber,
             chuyenNganhId: req.body.chuyenNganhId,

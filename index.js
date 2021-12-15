@@ -74,6 +74,28 @@ app.get("/", function(req, res) {
     }
     res.end();
 });
+/*
+
+const publicVapidKey = process.env.PUBLIC_VAPID_KEY;
+const privateVapidKey = process.env.PRIVATE_VAPID_KEY;
+
+webPush.setVapidDetails('mailto:test@example.com', publicVapidKey, privateVapidKey);
+
+app.post('/subscribe', (req, res) => {
+    const subscription = req.body
+    
+    res.status(201).json({});
+    
+    const payload = JSON.stringify({
+        title: 'Push notifications with Service Workers',
+    });
+    
+    webPush.sendNotification(subscription, payload)
+    .catch(error => console.error(error));
+});
+*/
+
+
 app.get("/api/send_notification", async function(req, res) {
     var user = await UserModel.findOne({id: req.query.idUser});
     
@@ -96,7 +118,7 @@ app.get("/api/send_notification", async function(req, res) {
            }, {
                headers: {
                    accept: 'application/json',
-                   Authorization: 'key=AAAAz8dVYTg:APA91bEAh3Pn3LN1nD5X2VItbfIBJT0pEyLnruW5lAMhe01emd_BbQDNLl4VjP0SrsCFb5rPnpZqA4Kl0n4qaBLfYfBXcjNquoOTgpFC0mF-uyoSS_KG_uXEGdYHJhsT7ISIeiWXWrMT'
+                   Authorization: '\tAAAAz8dVYTg:APA91bEAh3Pn3LN1nD5X2VItbfIBJT0pEyLnruW5lAMhe01emd_BbQDNLl4VjP0SrsCFb5rPnpZqA4Kl0n4qaBLfYfBXcjNquoOTgpFC0mF-uyoSS_KG_uXEGdYHJhsT7ISIeiWXWrMT'
                }
            })
            .then(function(response) {
