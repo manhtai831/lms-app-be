@@ -11,11 +11,11 @@ const {uploadImage} = require("../../utils/image");
 
 async function createFileSystem(req, res) {
     try {
-        if(req.body.idClass == null){
-            return res
-                .status(status.server_error)
-                .json(baseJson({code: 99, message: "\"idClass\" is required"}));
-        }
+        // if(req.body.idClass == null){
+        //     return res
+        //         .status(status.server_error)
+        //         .json(baseJson({code: 99, message: "\"idClass\" is required"}));
+        // }
         var resp;
         if (req.body.data) {
             var a = await uploadImage(req.body.data);
@@ -64,7 +64,7 @@ async function getAllFileSystem(req, res) {
         }else if(req.query.idClass){
             filter = {idClass : req.query.idClass};
         }
-        FileSystemModel.find(filter).then(async (data) => {
+        FileSystemModel.find(filter).then( (data) => {
 
             return res
                 .status(status.success)

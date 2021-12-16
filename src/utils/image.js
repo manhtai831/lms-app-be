@@ -123,20 +123,24 @@ async function uploadImage(mBase64) {
         await authorize(JSON.parse(content), uploadFile);
         
     });
-    await wait(3)
+    await wait(3);
+    console.log(extension);
+    console.log('JPEG,GIF,PNG,TIFF,RAW,PSD'.includes(extension));
     console.log('https://drive.google.com/file/d/' + fileUploadId + '/view');
     // https://drive.google.com/uc?export=view&id=1VdjEgb0aZl9IZa2jOzGU5_SNbmlmeiCj
     //https://drive.google.com/uc?export=download&id=1PpUCg8U0YkedIPYmm2NtLXt00JsdBJt2
     //https://drive.google.com/file/d/{id}/view
     //http://drive.google.com/thumbnail?id=
-    if('JPEG' + ',GIF' + ',PNG' + ',TIFF' + ',RAW' + ',PSD'.includes(extension)) {
+    if('JPEG,GIF,PNG,TIFF,RAW,PSD'.includes(extension)) {
         return {
             'type': content,
             'url': 'https://drive.google.com/uc?export=view&id=' + fileUploadId
         }
-    } else return {
-        'type': content,
-        'url': 'https://drive.google.com/file/d/' + fileUploadId + '/view'
+    } else{
+        return {
+            'type': content,
+            'url': 'https://drive.google.com/file/d/' + fileUploadId + '/view'
+        }
     }
     
 }

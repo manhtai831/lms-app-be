@@ -35,6 +35,9 @@ const cachegoose = require('cachegoose');
 const {getMoreFormatted, afterNow, getNowFormatted, getNowMilliseconds} = require("./src/utils/utils");
 const {baseJson} = require("./src/utils/base_json");
 const FileAttachModel = require("./src/model/file_attach_model");
+const functions = require('firebase-functions');
+var FCM = require('fcm-node');
+const admin = require('firebase-admin');
 
 // get config vars
 dotenv.config();
@@ -74,26 +77,41 @@ app.get("/", function(req, res) {
     }
     res.end();
 });
-/*
 
-const publicVapidKey = process.env.PUBLIC_VAPID_KEY;
-const privateVapidKey = process.env.PRIVATE_VAPID_KEY;
 
-webPush.setVapidDetails('mailto:test@example.com', publicVapidKey, privateVapidKey);
-
-app.post('/subscribe', (req, res) => {
-    const subscription = req.body
+app.post('/api/push_notify', async (req, res) => {
+    var serverKey = 'AAAAz8dVYTg:APA91bEAh3Pn3LN1nD5X2VItbfIBJT0pEyLnruW5lAMhe01emd_BbQDNLl4VjP0SrsCFb5rPnpZqA4Kl0n4qaBLfYfBXcjNquoOTgpFC0mF-uyoSS_KG_uXEGdYHJhsT7ISIeiWXWrMT';
+    var fcm = new FCM(serverKey);
+   var user =  await UserModel.findOne({id: req.body.id})
+    try {
+        var message = {
+            to: user.fcmToken,
+            notification: {
+                title: 'Thông báo điểm',
+                body: 'Điểm của bạn đã được hệ thống cập nhật'
+            },
+            
+        };
+        
+        
+        fcm.send(message, function(err, response) {
+            if(err) {
+                console.log(err);
+                return res.status(200).json(baseJson({code: 99}));
+            } else {
+                console.log("Successfully sent with response: ", response);
+                return res.status(200).json(baseJson({code: 0}));
+            }
+            
+        });
+        
+    } catch(e) {
+        console.log(e);
+        return res.status(200).json(baseJson({code: 99}));
+    }
     
-    res.status(201).json({});
     
-    const payload = JSON.stringify({
-        title: 'Push notifications with Service Workers',
-    });
-    
-    webPush.sendNotification(subscription, payload)
-    .catch(error => console.error(error));
 });
-*/
 
 
 app.get("/api/send_notification", async function(req, res) {
@@ -101,36 +119,36 @@ app.get("/api/send_notification", async function(req, res) {
     
     if(user.fcmToken) {
         var info = await FileAttachModel.findOne({id: req.query.idFileAttach})
-       if(info){
-           axios.post('https://fcm.googleapis.com/fcm/send', {
+        if(info) {
+            axios.post('https://fcm.googleapis.com/fcm/send', {
+                
+                "to": user.fcmToken,
+                "notification": {
+                    "body": 'Giảng viên đã cập nhật điểm của bạn là ' + info.point + '\nGhi chú: ' + info.note,
+                    "title": "Thông báo LMS App",
+                    "click_action": ""
+                },
+                "data": {
+                    "idClass": "32",
+                    "idSubject": "31"
+                    
+                }
+            }, {
+                headers: {
+                    accept: 'application/json',
+                    Authorization: '\tAAAAz8dVYTg:APA91bEAh3Pn3LN1nD5X2VItbfIBJT0pEyLnruW5lAMhe01emd_BbQDNLl4VjP0SrsCFb5rPnpZqA4Kl0n4qaBLfYfBXcjNquoOTgpFC0mF-uyoSS_KG_uXEGdYHJhsT7ISIeiWXWrMT'
+                }
+            })
+            .then(function(response) {
+                console.log(response);
+                return res.status(200).json(baseJson({code: 0}));
+            })
+            // .catch(function(error) {
+            //     // console.log(error);
+            //     return res.send("Gửi thông báo lỗi")
+            // });
+        }
         
-               "to": user.fcmToken,
-               "notification": {
-                   "body": 'Giảng viên đã cập nhật điểm của bạn là ' + info.point + '\nGhi chú: ' + info.note,
-                   "title": "Thông báo LMS App",
-                   "click_action": ""
-               },
-               "data": {
-                   "idClass": "32",
-                   "idSubject": "31"
-            
-               }
-           }, {
-               headers: {
-                   accept: 'application/json',
-                   Authorization: '\tAAAAz8dVYTg:APA91bEAh3Pn3LN1nD5X2VItbfIBJT0pEyLnruW5lAMhe01emd_BbQDNLl4VjP0SrsCFb5rPnpZqA4Kl0n4qaBLfYfBXcjNquoOTgpFC0mF-uyoSS_KG_uXEGdYHJhsT7ISIeiWXWrMT'
-               }
-           })
-           .then(function(response) {
-               console.log(response);
-               return res.status(200).json(baseJson({code: 0}));
-           })
-           // .catch(function(error) {
-           //     // console.log(error);
-           //     return res.send("Gửi thông báo lỗi")
-           // });
-       }
-       
     }
     return res.status(200).json(baseJson({code: 99}));
 });

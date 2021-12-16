@@ -273,16 +273,14 @@ async function getListUser(req, res) {
             users[i].kiHoc = k;
             users[i].listClass = l;
         }
+        console.log(users);
         var listUser;
         if(req.query.idClass) {
             listUser = [];
-            for(var i = 0; i < users.length; i++) {
-                for(var j = 0; j < users[i].listClassId.length; j++) {
-                    for(var k = 0; k < cl.length; k++) {
-                        if(users[i].listClassId[j] === cl[k].id) {
-                            listUser.push(users[i]);
-                            break;
-                        }
+            for(var v = 0; v < users.length; v++) {
+                for(var j = 0; j < users[v].listClassId.length; j++) {
+                    if(users[v].listClassId[j] == req.query.idClass) {
+                        listUser.push(users[v]);
                     }
                 }
             }
