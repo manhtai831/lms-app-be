@@ -170,25 +170,39 @@ const getAllQuestions = async(req, res, next) => {
     if(req.query.idMonHoc) {
         filter = {idMonHoc: req.query.idMonHoc}
     }
-    
+    var listUser = await UserModel.find().select("id name");
+   var listDocType = await DocumentTypeModel.find().select("id name");
+   var listSubject = await SubjectModel.find().select("id name");
+   var listAnswer = await AnswerModel.find().select("idCauHoi content id");
     // find all questions
     Question.find(filter)
     .then(async(data) => {
         
         var listQuestion = data;
         for(var i = 0; i < listQuestion.length; i++) {
-            var listCauTraLoi = await AnswerModel.find({idCauHoi: listQuestion[i].id}).select("idCauHoi content id");
-            // for(var j = 0; j < listQuestion[i].listCauTraLoi.length; j++) {
-            //    for(var k = 0; k< listCauTraLoi.length;k++){
-            //        if(listQuestion[i].listCauTraLoi[j] === listCauTraLoi[k].id);
-            //    }
-            //     if(lC)
-            //         lCauTraLoi.push(lC);
-            //
-            // }
-            listQuestion[i].mCreatedBy = await UserModel.findOne({id: listQuestion[i].createdBy}).select("id name")
-            listQuestion[i].danhMuc = await DocumentTypeModel.findOne({id: listQuestion[i].idDanhMuc}).select("id name")
-            listQuestion[i].monHoc = await SubjectModel.findOne({id: listQuestion[i].idMonHoc}).select("id name")
+            var listCauTraLoi = [];
+            for(var a = 0; a< listAnswer.length;a++){
+                if(listQuestion[i].id == listAnswer[a].idCauHoi){
+                    listCauTraLoi.push(listAnswer[a])
+                }
+            } for(var a = 0; a< listUser.length;a++){
+                if(listQuestion[i].createdBy == listUser[a].id){
+                    listQuestion[i].mCreatedBy =listUser[a];
+                    break;
+                }
+            }
+            for(var a = 0; a< listDocType.length;a++){
+                if(listQuestion[i].idDanhMuc == listDocType[a].id){
+                    listQuestion[i].danhMuc =listDocType[a];
+                    break;
+                }
+            }
+              for(var a = 0; a< listSubject.length;a++){
+                if(listQuestion[i].idMonHoc == listSubject[a].id){
+                    listQuestion[i].monHoc =listSubject[a];
+                    break;
+                }
+            }
             listQuestion[i].listCauTraLoiObject = listCauTraLoi;
             
         }
