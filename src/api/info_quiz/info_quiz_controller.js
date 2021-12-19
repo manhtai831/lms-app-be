@@ -174,7 +174,7 @@ const updatePointInfoQuiz = async(req, res, next) => {
     // }
     var filter;
     if(req.body.idDocumentType) {
-        filter = {idDocumentType: req.body.idDocumentType}
+        filter = {idDocumentType: req.body.idDocumentType,idUser: req.user.id}
     }
     
     // find all labs
