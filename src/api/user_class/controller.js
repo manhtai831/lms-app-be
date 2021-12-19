@@ -115,6 +115,7 @@ async function getSubjectRegisteredClass(req, res) {
         for(var j = 0; j< subjectList.length;j++){
             if(listClassRegister[i].idSubject === subjectList[j].id){
                 listSubjectRegister.push(subjectList[j]);
+                break;
             }
         }
     }
