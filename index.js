@@ -82,7 +82,8 @@ app.get("/", function(req, res) {
 app.post('/api/push_notify', async (req, res) => {
     var serverKey = 'AAAAz8dVYTg:APA91bEAh3Pn3LN1nD5X2VItbfIBJT0pEyLnruW5lAMhe01emd_BbQDNLl4VjP0SrsCFb5rPnpZqA4Kl0n4qaBLfYfBXcjNquoOTgpFC0mF-uyoSS_KG_uXEGdYHJhsT7ISIeiWXWrMT';
     var fcm = new FCM(serverKey);
-   var user =  await UserModel.findOne({id: req.body.id})
+   var user =  await UserModel.findOne({id: req.body.id});
+   console.log(user)
     try {
         var message = {
             to: user.fcmToken,
