@@ -109,16 +109,17 @@ async function getSubjectRegisteredClass(req, res) {
             }
         }
     }
+    console.log(listClassRegister)
     
-    var listSubjectRegister = [];
+    var listSubjectRegister = [];  for(var j = 0; j< subjectList.length;j++){
     for(var i =0; i< listClassRegister.length;i++){
-        for(var j = 0; j< subjectList.length;j++){
+      
             if(listClassRegister[i].idSubject === subjectList[j].id){
                 listSubjectRegister.push(subjectList[j]);
                 break;
             }
-        }
-    }
+     
+    }   }
     return res.status(status.success).json(baseJson.baseJson({
         code: 0,
         data: baseJsonPage(0, 0, listSubjectRegister.length, listSubjectRegister)
