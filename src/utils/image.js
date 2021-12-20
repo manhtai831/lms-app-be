@@ -132,7 +132,7 @@ async function uploadImage(mBase64) {
     //https://drive.google.com/uc?export=download&id=1PpUCg8U0YkedIPYmm2NtLXt00JsdBJt2
     //https://drive.google.com/file/d/{id}/view
     //http://drive.google.com/thumbnail?id=
-    if('JPEG,GIF,PNG,TIFF,RAW,PSD,SVG'.toLowerCase().includes(extension.toLowerCase())) {
+    if('JPEG,GIF,PNG,TIFF,RAW,PSD,SVG,JPG'.toLowerCase().includes(extension.toLowerCase())) {
         return {
             'type': content,
             'url': 'https://drive.google.com/uc?export=view&id=' + fileUploadId
