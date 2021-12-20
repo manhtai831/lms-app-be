@@ -13,6 +13,7 @@ const {
 	update_answer,
 	delete_answer,
 } = require("../../utils/role_json");
+const {baseJsonPage} = require("../../utils/base_json");
 
 const createAnswer = async (req, res, next) => {
 	//check role
@@ -96,19 +97,22 @@ const getAllAnswers = async (req, res, next) => {
 				baseJson.baseJson({ code: 99, message: "Tài khoản không có quyền" })
 			);
 	}
-
+	var filter;
+	if(req.query.idCauHoi){
+		filter ={idCauHoi: req.query.idCauHoi};
+	}
 	// find all answers
-	Answer.find()
+	Answer.find(filter)
 		.then((data) => {
 			return res.status(status.success).json(
 				baseJson.baseJson({
 					code: 0,
-					data: data,
+					data: baseJsonPage(0,0,data.length,data),
 				})
 			);
 		})
 		.catch((error) => {
-			next(error);
+			console.log(error);
 		});
 };
 
@@ -159,11 +163,12 @@ const updateAnswer = async (req, res) => {
 	//update answer
 	Answer.updateOne(
 		//update by id
-		{ id: req.query.id },
+		{ id: req.body.id },
 		//set and update data
 		{
 			$set: {
 				content: req.body.content,
+				idCauHoi:req.body.idCauHoi,
 				updatedBy: req.user.id,
 				updatedAt: getNowFormatted(),
 			},
@@ -178,7 +183,7 @@ const updateAnswer = async (req, res) => {
 			);
 		})
 		.catch((error) => {
-			next(error);
+			console.log(error);
 		});
 };
 
