@@ -124,7 +124,7 @@ async function uploadImage(mBase64) {
         
     });
     ///TODO NẾU UPDATE CODE CẦN PHẢI CHỈNH PHẦN NÀY VỀ 3S
-    await wait(2);
+    await wait(3);
     console.log(extension);
     console.log('JPEG,GIF,PNG,TIFF,RAW,PSD'.includes(extension));
     console.log('https://drive.google.com/file/d/' + fileUploadId + '/view');
